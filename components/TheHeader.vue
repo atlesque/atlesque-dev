@@ -8,7 +8,7 @@
           v-for="(link, index) in navLinks"
           :key="index"
           :to="link.url"
-          class="nav-link whitespace-nowrap first:-ml-8"
+          class="nav-link whitespace-nowrap first:-ml-6"
           :class="[
             {
               'nav-link--active': isLinkActive(link.url),
