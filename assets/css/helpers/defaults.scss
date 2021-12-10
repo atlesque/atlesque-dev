@@ -1,0 +1,27 @@
+body {
+  overflow-y: scroll;
+}
+
+::selection {
+  @apply bg-gray-light;
+}
+
+.page-padding {
+  @apply p-4;
+  @apply md:px-16;
+  @apply lg:px-32;
+}
+
+.page-width {
+  @apply max-w-screen-xl;
+  @apply mx-auto;
+}
+
+.page {
+  @extend .page-padding;
+  @extend .page-width;
+
+  &:not(.transparent-header) {
+    @apply pt-48;
+  }
+}

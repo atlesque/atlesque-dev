@@ -1,0 +1,49 @@
+.button {
+  @apply inline-block;
+  @apply text-center;
+  @apply cursor-pointer;
+  @apply px-4;
+  @apply py-2;
+  @apply text-white;
+  @apply bg-blue;
+  @apply transition-all;
+  @apply duration-100;
+  @apply text-base;
+
+  &:disabled,
+  &.disabled {
+    @apply bg-gray-light;
+
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled),
+  &:hover:not(.disabled),
+  &:focus:not(:disabled),
+  &:focus:not(.disabled) {
+    box-shadow: 0 0 0 theme("width[0.5]") theme("colors.gray-light");
+  }
+
+  &:active:not(:disabled),
+  &:active:not(.disabled) {
+    box-shadow: 0 0 0 theme("width[0.5]") theme("colors.gray-light");
+  }
+}
+
+.button-primary {
+  @extend .button;
+  @apply bg-red;
+
+  &:hover:not(:disabled),
+  &:hover:not(.disabled),
+  &:focus:not(:disabled),
+  &:focus:not(.disabled) {
+    box-shadow: 0 0 0 theme("width[0.5]") theme("colors.gray-light");
+  }
+
+  &:active:not(:disabled),
+  &:active:not(.disabled) {
+    box-shadow: 0 0 0 theme("width[0.5]") theme("colors.gray-light");
+    @apply bg-red;
+  }
+}
