@@ -31,11 +31,13 @@ body {
 .headline-xl {
   @apply text-3xl;
   @apply font-medium;
+  @apply mb-8;
 }
 
 .headline {
   @apply text-2xl;
   @apply font-normal;
+  @apply mb-8;
 }
 
 .h1,

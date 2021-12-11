@@ -1,5 +1,5 @@
 <template>
-  <nav ref="navMenu" class="fixed z-40 w-full transition-all duration-500 px-4">
+  <nav ref="navMenu" class="fixed z-40 w-full transition-all duration-500 px-4 bg-white">
     <div
       class="page-padding page-width flex items-center justify-end lg:justify-start"
     >
@@ -18,7 +18,7 @@
           ><span class="link-name">{{ link.text }}</span></NuxtLink
         >
       </div>
-      <button class="flex items-center lg:hidden mt-4" @click="openMobileMenu">
+      <button v-show="isMobileMenuVisible === false" class="flex items-center lg:hidden mt-4" @click="openMobileMenu">
         <svg
           aria-hidden="true"
           focusable="false"
@@ -137,9 +137,7 @@ export default {
 }
 
 .nav-link {
-  @apply px-4;
-  @apply pt-8;
-  @apply pb-4;
+  @apply p-4;
   @apply font-medium;
 
   .link-name:hover,
