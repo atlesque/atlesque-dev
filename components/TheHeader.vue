@@ -1,5 +1,8 @@
 <template>
-  <nav ref="navMenu" class="fixed z-40 w-full transition-all duration-500 px-4 bg-white">
+  <nav
+    ref="navMenu"
+    class="fixed z-40 w-full transition-all duration-500 bg-white"
+  >
     <div
       class="page-padding page-width flex items-center justify-end lg:justify-start"
     >
@@ -18,7 +21,11 @@
           ><span class="link-name">{{ link.text }}</span></NuxtLink
         >
       </div>
-      <button v-show="isMobileMenuVisible === false" class="flex items-center lg:hidden mt-4" @click="openMobileMenu">
+      <button
+        v-show="isMobileMenuVisible === false"
+        class="flex items-center lg:hidden"
+        @click="openMobileMenu"
+      >
         <svg
           aria-hidden="true"
           focusable="false"
@@ -34,7 +41,7 @@
         </svg>
       </button>
       <div v-show="isMobileMenuVisible === true" class="mobile-menu">
-        <div class="flex flex-col">
+        <div class="flex flex-col mobile-menu-inner">
           <div class="flex justify-end pb-4">
             <button
               class="flex items-center w-6 h-6 mt-8"
@@ -149,7 +156,7 @@ export default {
 
 .nav-link--mobile {
   @apply py-3;
-  @apply font-bold;
+  @apply font-medium;
   @apply text-xl;
 }
 
@@ -171,12 +178,26 @@ export default {
   @apply inset-0;
   @apply w-screen;
   @apply h-screen;
-  @apply px-16;
+  @apply pl-16;
+  @apply pr-14;
+  @apply sm:pr-20;
   @apply bg-white;
   @apply text-black;
   @apply overscroll-contain;
   @apply z-10;
-  @apply max-h-screen;
   @apply overflow-auto;
+  @apply overscroll-contain;
+}
+
+.mobile-menu-inner {
+  /* 
+    HACK: When overscroll-contain class is set,
+    and the height is 1px more than the viewport,
+    the overscroll-contain will prevent the body
+    from scrolling when the menu is open.
+
+    This prevents the need for any body classes.
+  */
+  height: calc(100vh + 1px);
 }
 </style>

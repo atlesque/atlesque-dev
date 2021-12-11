@@ -1,6 +1,6 @@
 <template>
   <main class="mb-32">
-    <section class="grid grid-cols-1 lg:grid-cols-2 mb-32">
+    <section id="hero" class="grid grid-cols-1 lg:grid-cols-2 mb-32">
       <div class="flex flex-col mr-8 mb-8">
         <h1 class="headline-xl">
           Hi, I'm <span class="text-red">Alex</span>ander
@@ -10,8 +10,10 @@
           software, fully secure and with a smile!
         </p>
         <div class="flex">
-          <a href="#my-story" class="button-primary mr-8">Read my story</a>
-          <a href="#contact" class="button">Contact me</a>
+          <!-- <NuxtLink to="#my-story" class="button-primary mr-8"
+            >Read my story</NuxtLink
+          > -->
+          <NuxtLink to="#contact" class="button-primary">Contact me</NuxtLink>
         </div>
       </div>
       <div class="flex justify-end">
@@ -22,7 +24,7 @@
         />
       </div>
     </section>
-    <section class="mb-32">
+    <section id="my-story" class="mb-32">
       <h1 class="headline"><CurlyBraceWrapper>My story</CurlyBraceWrapper></h1>
       <p class="text-xl mb-8">27 years ago, I was born in Donetsk, Ukraine:</p>
       <ul class="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-32">
@@ -99,7 +101,7 @@
       </ul>
       <!-- TODO: Add music player component with own songs -->
     </section>
-    <section class="mb-32">
+    <section id="career" class="mb-32">
       <h1 class="headline">
         <CurlyBraceWrapper>Career highlights</CurlyBraceWrapper>
       </h1>
@@ -124,7 +126,7 @@
         <span class="font-medium">first place in the Apple App Store</span>.
       </p>
     </section>
-    <section class="mb-32">
+    <section id="expertise" class="mb-32">
       <h1 class="headline">
         <CurlyBraceWrapper>Technical expertise</CurlyBraceWrapper>
       </h1>
@@ -174,7 +176,7 @@
         and audio production.
       </p>
     </section>
-    <section>
+    <section id="contact">
       <h1 class="headline">
         <CurlyBraceWrapper>Contact me</CurlyBraceWrapper>
       </h1>
