@@ -96,6 +96,31 @@
       </ul>
       <!-- TODO: Add music player component with own songs -->
     </section>
+    <section class="mb-32">
+      <h1 class="headline">
+        <CurlyBraceWrapper>Career highlights</CurlyBraceWrapper>
+      </h1>
+      <p class="text-xl mb-8">
+        I hold a
+        <span class="font-medium">Bachelor's degree in Computer Science</span>
+        and I'm a <span class="font-medium">Certified Ethical Hacker</span>.
+      </p>
+      <p class="text-xl mb-8">
+        I've taught <span class="font-medium">Digital Forensics</span> to the
+        Federal Computer Crime Unit of the
+        <span class="font-medium">Belgian police</span>.
+      </p>
+      <p class="text-xl mb-8">
+        I've presented
+        <span class="font-medium">talks on Internet-of-Things security</span>
+        and digital safety.
+      </p>
+      <p class="text-xl mb-8">
+        During my internship in Osaka, <span class="font-medium">Japan</span>,
+        we launched a cross-platform app for children that held
+        <span class="font-medium">first place in the Apple App Store</span>.
+      </p>
+    </section>
   </main>
 </template>
 
