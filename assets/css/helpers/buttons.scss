@@ -9,6 +9,10 @@
   @apply transition-all;
   @apply duration-100;
   @apply text-base;
+  @apply shadow-md;
+  @apply rounded-l-3xl;
+  @apply rounded-br-3xl;
+  @apply rounded-tr-md;
 
   &:disabled,
   &.disabled {

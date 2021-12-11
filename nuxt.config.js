@@ -81,6 +81,8 @@ export default {
     "@nuxtjs/stylelint-module",
     // https://go.nuxtjs.dev/tailwindcss
     "@nuxtjs/tailwindcss",
+    // https://image.nuxtjs.org
+    "@nuxt/image",
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
