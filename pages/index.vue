@@ -174,6 +174,63 @@
         and audio production.
       </p>
     </section>
+    <section>
+      <h1 class="headline">
+        <CurlyBraceWrapper>Contact me</CurlyBraceWrapper>
+      </h1>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div>
+          <p class="text-xl mb-8">
+            Whether you're interested in a flexible workforce, a business
+            partner or a philantropic friend, I'm here to help!
+          </p>
+          <p class="text-xl mb-8">
+            Happy to get in touch via video, phone or for a cup of tea in
+            Brugge, Belgium!
+          </p>
+          <p class="text-xl mb-8">
+            Looking forward to creating value in the world together! 🙏
+          </p>
+        </div>
+        <div class="relative">
+          <address
+            class="grid grid-cols-1 gap-8 justify-items-start relative z-10"
+          >
+            <a href="mailto:alexander@atlesque.com" class="button-primary"
+              >alexander@atlesque.com</a
+            >
+            <a href="tel:+32473372210" class="button-primary"
+              >+32 473 37 22 10</a
+            >
+            <a
+              href="https://www.linkedin.com/in/alexandervanmaele/"
+              target="_blank"
+              class="button-primary"
+              >LinkedIn</a
+            >
+            <a
+              href="https://www.instagram.com/atlesque/"
+              target="_blank"
+              class="button-primary"
+              >Instagram</a
+            >
+            <a
+              href="https://atlesque.com/"
+              target="_blank"
+              class="button-primary"
+              >Photography portfolio</a
+            >
+          </address>
+          <div class="absolute inset-0 z-0 py-4 flex items-center justify-end">
+            <NuxtImg
+              src="/images/alex/alex-portrait-circle.png"
+              alt="Portrait of me"
+              class="object-contain h-full"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </template>
 
