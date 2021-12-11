@@ -44,7 +44,10 @@
             <NuxtImg
               :src="nonProfit.imageUrl"
               :alt="nonProfit.name"
-              :class="['object-contain mb-8 inline-block', nonProfit.class]"
+              :class="[
+                'object-contain mb-8 inline-block',
+                nonProfit.imageClass,
+              ]"
             />
           </a>
           <p>{{ nonProfit.description }}</p>
@@ -121,6 +124,56 @@
         <span class="font-medium">first place in the Apple App Store</span>.
       </p>
     </section>
+    <section class="mb-32">
+      <h1 class="headline">
+        <CurlyBraceWrapper>Technical expertise</CurlyBraceWrapper>
+      </h1>
+      <p class="text-xl mb-8">
+        My favorite programming languages & frameworks are:
+      </p>
+      <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-32">
+        <li
+          v-for="(technology, index) in technologies"
+          :key="index"
+          class="flex items-center"
+        >
+          <NuxtImg
+            :src="technology.imageUrl"
+            :alt="technology.name"
+            :title="technology.name"
+            class="object-contain"
+          />
+        </li>
+      </ul>
+      <p class="text-xl mb-8">
+        I've helped build commercial and open-source projects including:
+      </p>
+      <ul class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-32">
+        <li
+          v-for="(project, index) in projects"
+          :key="index"
+          class="bg-gray-extra-light p-8"
+        >
+          <a :href="project.url" target="_blank">
+            <NuxtImg
+              :src="project.imageUrl"
+              :alt="project.name"
+              :class="['object-contain mb-8 inline-block', project.imageClass]"
+            />
+          </a>
+          <p>{{ project.description }}</p>
+        </li>
+      </ul>
+      <p class="text-xl mb-8">
+        I've been writing code since I was 10. Professionally since 2015.
+      </p>
+      <p class="text-xl mb-8">I speak Dutch, English and Russian fluently.</p>
+      <p class="text-xl mb-8">I understand some French and Japanese too.</p>
+      <p class="text-xl mb-8">
+        I offer extra services like copywriting, photo & videography, teaching
+        and audio production.
+      </p>
+    </section>
   </main>
 </template>
 
@@ -157,7 +210,7 @@ export default {
           description:
             "Buddhist teachings and courses for practitioners and enthusiasts. Spanning a worldwide network of volunteers. Web development and online practice support.",
           imageUrl: "/images/non-profits/ah-lama.png",
-          class: "max-w-[20rem]",
+          imageClass: "max-w-[20rem]",
         },
         {
           name: "Testament",
@@ -172,7 +225,7 @@ export default {
           description:
             "A volunteer-driven ecological garden project supporting local agriculture. Participants can assemble their own flower bouquets. Web development, copywriting and photography.",
           imageUrl: "/images/non-profits/de-innengaard.png",
-          class: "max-w-[20rem]",
+          imageClass: "max-w-[20rem]",
         },
       ],
       books: [
@@ -245,6 +298,58 @@ export default {
         {
           title: "Tree Man",
           imageUrl: "/images/paintings/tree-man.png",
+        },
+      ],
+      technologies: [
+        {
+          name: "Vue",
+          imageUrl: "/images/technologies/vue.png",
+        },
+        {
+          name: "Nuxt",
+          imageUrl: "/images/technologies/nuxt.png",
+        },
+        {
+          name: "React",
+          imageUrl: "/images/technologies/react.png",
+        },
+        {
+          name: "Node",
+          imageUrl: "/images/technologies/node.png",
+        },
+        {
+          name: "WordPress",
+          imageUrl: "/images/technologies/wordpress.png",
+        },
+      ],
+      projects: [
+        {
+          name: "Among Us Detective",
+          url: "https://amongusdetective.com/",
+          description:
+            "An open-source tracking tool for the popular online game Among Us by InnerSloth. Written in Vue.",
+          imageUrl: "/images/projects/among-us-detective.png",
+        },
+        {
+          name: "Stuurkracht",
+          url: "https://stuurkracht.be/",
+          description:
+            "An open-source web app for sending e-cards to people who you care about and are in need of support. Full-stack in Nest and Nuxt.",
+          imageUrl: "/images/projects/stuurkracht.png",
+        },
+        {
+          name: "ZBaduk",
+          url: "https://www.zbaduk.com/",
+          description:
+            "Web app using Artificial Intelligence to analyze Go (Baduk) games. Helped improve the UI written in Angular with TypeScript.",
+          imageUrl: "/images/projects/zbaduk.png",
+        },
+        {
+          name: "Clarus",
+          url: "https://www.clarus.biz/",
+          description:
+            "App used by Belgian funeral directors, crematoriums and municipalities to manage their death certificates and concession needs. Written in Vue and Nuxt.",
+          imageUrl: "/images/projects/clarus.png",
         },
       ],
     };
