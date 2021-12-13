@@ -144,7 +144,7 @@ export default {
 }
 
 .nav-link {
-  @apply p-4;
+  @apply px-4;
   @apply font-medium;
 
   .link-name:hover,
