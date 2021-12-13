@@ -179,8 +179,8 @@ export default {
   @apply w-screen;
   @apply h-screen;
   @apply pl-16;
-  @apply pr-14;
-  @apply sm:pr-20;
+  @apply pr-10;
+  @apply sm:pr-16;
   @apply bg-white;
   @apply text-black;
   @apply overscroll-contain;
