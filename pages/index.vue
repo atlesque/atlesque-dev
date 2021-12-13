@@ -1,6 +1,6 @@
 <template>
-  <main class="mb-32">
-    <section id="hero" class="grid grid-cols-1 lg:grid-cols-2 mb-32">
+  <main class="mb-16 md:mb-32">
+    <section id="hero" class="grid grid-cols-1 lg:grid-cols-2 mb-16 md:mb-32">
       <div class="flex flex-col mr-8 mb-8">
         <h1 class="headline-xl">
           Hi, I'm <span class="text-red">Alex</span>ander
@@ -28,10 +28,12 @@
         />
       </div>
     </section>
-    <section id="my-story" class="mb-32">
+    <section id="my-story" class="mb-16 md:mb-32">
       <h1 class="headline"><CurlyBraceWrapper>My story</CurlyBraceWrapper></h1>
-      <p class="md:text-xl mb-8">27 years ago, I was born in Donetsk, Ukraine:</p>
-      <ul class="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-32">
+      <p class="md:text-xl mb-8">
+        27 years ago, I was born in Donetsk, Ukraine:
+      </p>
+      <ul class="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-16 md:mb-32">
         <li v-for="(image, index) in ukraineImages" :key="index">
           <NuxtImg
             :src="image.src"
@@ -48,7 +50,7 @@
         I'm passionate about helping others, that's why I love working with
         non-profits:
       </p>
-      <ul class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-32">
+      <ul class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16 md:mb-32">
         <li
           v-for="(nonProfit, index) in nonProfits"
           :key="index"
@@ -63,9 +65,10 @@
                 nonProfit.imageClass,
               ]"
               format="webp"
+              width="208px"
               height="50px"
               quality="100"
-              fit="outside"
+              fit="inside"
             />
           </a>
           <p>{{ nonProfit.description }}</p>
@@ -74,7 +77,9 @@
       <p class="md:text-xl mb-8">
         I also love reading books! Here are some of my favorites:
       </p>
-      <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-32">
+      <ul
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-16 md:mb-32"
+      >
         <li v-for="(book, index) in books" :key="index" class="shadow-md">
           <a
             :href="book.url"
@@ -142,9 +147,9 @@
         <source :src="track.url" />
       </audio>
     </section>
-    <section id="career" class="mb-32">
+    <section id="career" class="mb-16 md:mb-32">
       <h1 class="headline">
-        <CurlyBraceWrapper>Career highlights</CurlyBraceWrapper>
+        <CurlyBraceWrapper>Career</CurlyBraceWrapper>
       </h1>
       <p class="md:text-xl mb-8">
         I hold a
@@ -166,15 +171,22 @@
         we launched a cross-platform app for children that held
         <span class="font-medium">first place in the Apple App Store</span>.
       </p>
+      <p class="md:text-xl mb-8">
+        I've founded my own company <span class="font-medium">Atlesque</span> in
+        2017. Recently we expanded with my father to offer video productions
+        under <span class="font-medium">Atlesque Media</span>.
+      </p>
     </section>
-    <section id="expertise" class="mb-32">
+    <section id="expertise" class="mb-16 md:mb-32">
       <h1 class="headline">
-        <CurlyBraceWrapper>Technical expertise</CurlyBraceWrapper>
+        <CurlyBraceWrapper>Expertise</CurlyBraceWrapper>
       </h1>
       <p class="md:text-xl mb-8">
         My favorite programming languages & frameworks are:
       </p>
-      <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-32">
+      <ul
+        class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-8 mb-16 md:mb-32"
+      >
         <li
           v-for="(technology, index) in technologies"
           :key="index"
@@ -196,7 +208,7 @@
       <p class="md:text-xl mb-8">
         I've helped build commercial and open-source projects including:
       </p>
-      <ul class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-32">
+      <ul class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16 md:mb-32">
         <li
           v-for="(project, index) in projects"
           :key="index"
@@ -208,9 +220,10 @@
               :alt="project.name"
               :class="['object-contain mb-8 inline-block', project.imageClass]"
               format="webp"
+              width="208px"
               height="50px"
               quality="100"
-              fit="outside"
+              fit="inside"
             />
           </a>
           <p>{{ project.description }}</p>
@@ -219,7 +232,9 @@
       <p class="md:text-xl mb-8">
         I've been writing code since I was 10. Professionally since 2015.
       </p>
-      <p class="md:text-xl mb-8">I speak Dutch, English and Russian fluently.</p>
+      <p class="md:text-xl mb-8">
+        I speak Dutch, English and Russian fluently.
+      </p>
       <p class="md:text-xl mb-8">I understand some French and Japanese too.</p>
       <p class="md:text-xl mb-8">
         I offer extra services like copywriting, photo & videography, teaching
