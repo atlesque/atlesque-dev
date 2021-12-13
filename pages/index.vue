@@ -21,6 +21,10 @@
           src="/images/alex/alex-sitting-in-gras-with-camera.png"
           alt="Me sitting in grass with camera"
           class="object-contain"
+          format="webp"
+          width="518px"
+          height="267px"
+          quality="100"
         />
       </div>
     </section>
@@ -29,7 +33,15 @@
       <p class="text-xl mb-8">27 years ago, I was born in Donetsk, Ukraine:</p>
       <ul class="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-32">
         <li v-for="(image, index) in ukraineImages" :key="index">
-          <NuxtImg :src="image.src" :alt="image.alt" class="object-contain" />
+          <NuxtImg
+            :src="image.src"
+            :alt="image.alt"
+            class="object-contain"
+            format="webp"
+            width="243px"
+            height="221px"
+            quality="100"
+          />
         </li>
       </ul>
       <p class="text-xl mb-8">
@@ -42,7 +54,7 @@
           :key="index"
           class="bg-gray-extra-light p-8"
         >
-          <a :href="nonProfit.url" target="_blank">
+          <a :href="nonProfit.url" target="_blank" rel="noopener">
             <NuxtImg
               :src="nonProfit.imageUrl"
               :alt="nonProfit.name"
@@ -50,6 +62,10 @@
                 'object-contain mb-8 inline-block',
                 nonProfit.imageClass,
               ]"
+              format="webp"
+              height="50px"
+              quality="100"
+              fit="outside"
             />
           </a>
           <p>{{ nonProfit.description }}</p>
@@ -60,11 +76,20 @@
       </p>
       <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-32">
         <li v-for="(book, index) in books" :key="index" class="shadow-md">
-          <a :href="book.url" target="_blank" :title="book.title">
+          <a
+            :href="book.url"
+            target="_blank"
+            rel="noopener"
+            :title="book.title"
+          >
             <NuxtImg
               :src="book.imageUrl"
               :alt="book.title"
               class="object-contain"
+              format="webp"
+              width="188px"
+              height="249px"
+              quality="100"
             />
           </a>
         </li>
@@ -82,6 +107,10 @@
             :src="portrait.imageUrl"
             alt="Studio portrait"
             class="object-contain"
+            format="webp"
+            width="188px"
+            height="249px"
+            quality="100"
           />
         </li>
       </ul>
@@ -96,6 +125,10 @@
             :alt="`Painting entitled ${painting.title}`"
             :title="painting.title"
             class="object-contain"
+            format="webp"
+            width="188px"
+            height="249px"
+            quality="100"
           />
         </li>
       </ul>
@@ -152,6 +185,11 @@
             :alt="technology.name"
             :title="technology.name"
             class="object-contain"
+            format="webp"
+            width="150px"
+            height="150px"
+            quality="100"
+            fit="outside"
           />
         </li>
       </ul>
@@ -164,11 +202,15 @@
           :key="index"
           class="bg-gray-extra-light p-8"
         >
-          <a :href="project.url" target="_blank">
+          <a :href="project.url" target="_blank" rel="noopener">
             <NuxtImg
               :src="project.imageUrl"
               :alt="project.name"
               :class="['object-contain mb-8 inline-block', project.imageClass]"
+              format="webp"
+              height="50px"
+              quality="100"
+              fit="outside"
             />
           </a>
           <p>{{ project.description }}</p>
@@ -215,18 +257,21 @@
             <a
               href="https://www.linkedin.com/in/alexandervanmaele/"
               target="_blank"
+              rel="noopener"
               class="button-primary"
               >LinkedIn</a
             >
             <a
               href="https://www.instagram.com/atlesque/"
               target="_blank"
+              rel="noopener"
               class="button-primary"
               >Instagram</a
             >
             <a
               href="https://atlesque.com/"
               target="_blank"
+              rel="noopener"
               class="button-primary"
               >Photography portfolio</a
             >
@@ -236,6 +281,11 @@
               src="/images/alex/alex-portrait-circle.png"
               alt="Portrait of me"
               class="object-contain h-full"
+              format="webp"
+              width="278px"
+              height="278px"
+              quality="100"
+              fit="inside"
             />
           </div>
         </div>
