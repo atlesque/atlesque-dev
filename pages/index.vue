@@ -5,7 +5,7 @@
         <h1 class="headline-xl">
           Hi, I'm <span class="text-red">Alex</span>ander
         </h1>
-        <p class="text-xl mb-8">
+        <p class="md:text-xl mb-8">
           As a freelance software developer, I help you build customer-facing
           software, fully secure and with a smile!
         </p>
@@ -30,7 +30,7 @@
     </section>
     <section id="my-story" class="mb-32">
       <h1 class="headline"><CurlyBraceWrapper>My story</CurlyBraceWrapper></h1>
-      <p class="text-xl mb-8">27 years ago, I was born in Donetsk, Ukraine:</p>
+      <p class="md:text-xl mb-8">27 years ago, I was born in Donetsk, Ukraine:</p>
       <ul class="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-32">
         <li v-for="(image, index) in ukraineImages" :key="index">
           <NuxtImg
@@ -44,7 +44,7 @@
           />
         </li>
       </ul>
-      <p class="text-xl mb-8">
+      <p class="md:text-xl mb-8">
         I'm passionate about helping others, that's why I love working with
         non-profits:
       </p>
@@ -71,7 +71,7 @@
           <p>{{ nonProfit.description }}</p>
         </li>
       </ul>
-      <p class="text-xl mb-8">
+      <p class="md:text-xl mb-8">
         I also love reading books! Here are some of my favorites:
       </p>
       <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-32">
@@ -94,7 +94,7 @@
           </a>
         </li>
       </ul>
-      <p class="text-xl mb-8">
+      <p class="md:text-xl mb-8">
         In my free time, I enjoy photography, creating art and producing music:
       </p>
       <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-8">
@@ -146,22 +146,22 @@
       <h1 class="headline">
         <CurlyBraceWrapper>Career highlights</CurlyBraceWrapper>
       </h1>
-      <p class="text-xl mb-8">
+      <p class="md:text-xl mb-8">
         I hold a
         <span class="font-medium">Bachelor's degree in Computer Science</span>
         and I'm a <span class="font-medium">Certified Ethical Hacker</span>.
       </p>
-      <p class="text-xl mb-8">
+      <p class="md:text-xl mb-8">
         I've taught <span class="font-medium">Digital Forensics</span> to the
         Federal Computer Crime Unit of the
         <span class="font-medium">Belgian police</span>.
       </p>
-      <p class="text-xl mb-8">
+      <p class="md:text-xl mb-8">
         I've presented
         <span class="font-medium">talks on Internet-of-Things security</span>
         and digital safety.
       </p>
-      <p class="text-xl mb-8">
+      <p class="md:text-xl mb-8">
         During my internship in Osaka, <span class="font-medium">Japan</span>,
         we launched a cross-platform app for children that held
         <span class="font-medium">first place in the Apple App Store</span>.
@@ -171,7 +171,7 @@
       <h1 class="headline">
         <CurlyBraceWrapper>Technical expertise</CurlyBraceWrapper>
       </h1>
-      <p class="text-xl mb-8">
+      <p class="md:text-xl mb-8">
         My favorite programming languages & frameworks are:
       </p>
       <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-32">
@@ -193,7 +193,7 @@
           />
         </li>
       </ul>
-      <p class="text-xl mb-8">
+      <p class="md:text-xl mb-8">
         I've helped build commercial and open-source projects including:
       </p>
       <ul class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-32">
@@ -216,12 +216,12 @@
           <p>{{ project.description }}</p>
         </li>
       </ul>
-      <p class="text-xl mb-8">
+      <p class="md:text-xl mb-8">
         I've been writing code since I was 10. Professionally since 2015.
       </p>
-      <p class="text-xl mb-8">I speak Dutch, English and Russian fluently.</p>
-      <p class="text-xl mb-8">I understand some French and Japanese too.</p>
-      <p class="text-xl mb-8">
+      <p class="md:text-xl mb-8">I speak Dutch, English and Russian fluently.</p>
+      <p class="md:text-xl mb-8">I understand some French and Japanese too.</p>
+      <p class="md:text-xl mb-8">
         I offer extra services like copywriting, photo & videography, teaching
         and audio production.
       </p>
@@ -232,15 +232,15 @@
       </h1>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
         <div>
-          <p class="text-xl mb-8">
+          <p class="md:text-xl mb-8">
             Whether you're interested in a flexible workforce, a business
             partner or a philantropic friend, I'm here to help!
           </p>
-          <p class="text-xl mb-8">
+          <p class="md:text-xl mb-8">
             Happy to get in touch via video, phone or for a cup of tea in
             Brugge, Belgium!
           </p>
-          <p class="text-xl mb-8">
+          <p class="md:text-xl mb-8">
             Looking forward to creating value in the world together! 🙏
           </p>
         </div>

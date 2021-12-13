@@ -47,19 +47,20 @@ body {
 }
 
 .h1 {
-  @apply text-2xl;
-}
-
-.h2 {
   @apply text-xl;
 }
 
-.h3 {
+.h2 {
   @apply text-lg;
+}
+
+.h3 {
+  @apply text-base;
 }
 
 .p {
   @apply mb-4;
+  @apply text-sm;
 }
 
 .link {
@@ -79,5 +80,19 @@ body {
   }
   .headline {
     @apply text-3xl;
+  }
+  .h1 {
+    @apply text-2xl;
+  }
+
+  .h2 {
+    @apply text-xl;
+  }
+
+  .h3 {
+    @apply text-lg;
+  }
+  .p {
+    @apply text-base;
   }
 }
