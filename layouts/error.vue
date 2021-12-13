@@ -1,7 +1,7 @@
 <template>
   <main class="mx-auto max-w-page page">
-    <section class="px-10 pb-16 mx-auto text-center max-w-7xl">
-      <h1 class="h1">
+    <section class="pb-16">
+      <h1 class="h1 mb-8">
         <template v-if="error.message != null">
           {{ error.message }}
         </template>
@@ -15,9 +15,7 @@
       >
         Go back
       </NuxtLink>
-      <NuxtLink v-else :to="localePath('/')" class="button-primary"
-        >Back home</NuxtLink
-      >
+      <NuxtLink v-else to="/" class="button-primary">Back home</NuxtLink>
     </section>
   </main>
 </template>

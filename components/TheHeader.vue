@@ -90,19 +90,19 @@ export default {
       navLinks: [
         {
           text: "My story",
-          url: "#my-story",
+          url: "/#my-story",
         },
         {
           text: "Career",
-          url: "#career",
+          url: "/#career",
         },
         {
           text: "Expertise",
-          url: "#expertise",
+          url: "/#expertise",
         },
         {
           text: "Contact",
-          url: "#contact",
+          url: "/#contact",
         },
       ],
     };

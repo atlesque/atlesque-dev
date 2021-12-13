@@ -99,7 +99,15 @@
           />
         </li>
       </ul>
-      <!-- TODO: Add music player component with own songs -->
+      <!-- <AudioPlayer :tracks="musicTracks" /> -->
+      <audio
+        v-for="(track, index) in musicTracks"
+        :key="index"
+        controls
+        class="w-full mb-8 last:mb-0"
+      >
+        <source :src="track.url" />
+      </audio>
     </section>
     <section id="career" class="mb-32">
       <h1 class="headline">
@@ -357,6 +365,16 @@ export default {
         {
           title: "Tree Man",
           imageUrl: "/images/paintings/tree-man.png",
+        },
+      ],
+      musicTracks: [
+        {
+          title: "Playing God",
+          url: "/audio/songs/Deep Iris - Untitled - 06 Playing God.mp3",
+        },
+        {
+          title: "War",
+          url: "/audio/songs/Deep Iris - Untitled - 02 War.mp3",
         },
       ],
       technologies: [
