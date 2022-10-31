@@ -1,6 +1,6 @@
 module.exports = {
   mode: "jit",
-  purge: ["./content/**/*.md"], // Whitelist classes used in Markdown files
+  content: ["./**/*.{js,jsx,ts,tsx,vue}", "./content/**/*.md"],
   theme: {
     colors: {
       /*
@@ -10,19 +10,19 @@ module.exports = {
       "gray-light": "#E6E7E8",
       "gray-extra-light": "#F9F9F9",
       black: "#0E0A06",
-      /* 
+      /*
         Primary colours
       */
       red: "#F3665B",
       blue: "#577590",
-      /* 
+      /*
         Utility
       */
       transparent: "transparent",
       current: "currentColor",
     },
     fontSize: {
-      /* 
+      /*
         Type scale: https://bit.ly/3yAyui5
         Format: [fontSize, lineHeight]
       */
@@ -34,7 +34,7 @@ module.exports = {
       "3xl": ["2.441rem", 1.3], // Headlines - 39.06px
       "4xl": ["3.052rem", 1.3], // XL-Headlines - 48.83px
     },
-    /* 
+    /*
       Custom fonts
     */
     fontFamily: {
@@ -44,3 +44,6 @@ module.exports = {
   },
   plugins: [],
 };
+
+
+

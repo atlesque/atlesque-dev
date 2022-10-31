@@ -10,9 +10,6 @@
           software, fully secure and with a smile!
         </p>
         <div class="flex">
-          <!-- <NuxtLink to="#my-story" class="button-primary mr-8"
-            >Read my story</NuxtLink
-          > -->
           <NuxtLink to="#contact" class="button-primary">Contact me</NuxtLink>
         </div>
       </div>
@@ -30,9 +27,7 @@
     </section>
     <section id="my-story" class="mb-16 md:mb-32">
       <h1 class="headline"><CurlyBraceWrapper>My story</CurlyBraceWrapper></h1>
-      <p class="md:text-xl mb-8">
-        27 years ago, I was born in Donetsk, Ukraine:
-      </p>
+      <p class="md:text-xl mb-8">I was born in Donetsk, Ukraine in 1994:</p>
       <ul class="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-16 md:mb-32">
         <li v-for="(image, index) in ukraineImages" :key="index">
           <NuxtImg
@@ -100,7 +95,9 @@
         </li>
       </ul>
       <p class="md:text-xl mb-8">
-        In my free time, I enjoy photography, creating art and producing music:
+        My other obsessions include
+        <a href="https://atlesque.com">photography</a>, art and music
+        production:
       </p>
       <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-8">
         <li
@@ -169,12 +166,18 @@
       <p class="md:text-xl mb-8">
         During my internship in Osaka, <span class="font-medium">Japan</span>,
         we launched a cross-platform app for children that held
-        <span class="font-medium">first place in the Apple App Store</span>.
+        <a
+          class="link"
+          href="/images/others/night-zookeeper-appstore-2015.png"
+          target="_blank"
+          >first place in the Apple App Store</a
+        >.
       </p>
       <p class="md:text-xl mb-8">
         I've founded my own company <span class="font-medium">Atlesque</span> in
-        2017. Recently we expanded with my father to offer video productions
-        under <span class="font-medium">Atlesque Media</span>.
+        2017. Four years later, my father joined me to expand our content
+        creation offerings under
+        <a class="link" href="https://atlesque.media">Atlesque Media</a>.
       </p>
     </section>
     <section id="expertise" class="mb-16 md:mb-32">
@@ -235,7 +238,7 @@
       <p class="md:text-xl mb-8">
         I speak Dutch, English and Russian fluently.
       </p>
-      <p class="md:text-xl mb-8">I understand some French and Japanese too.</p>
+      <p class="md:text-xl mb-8">I understand basic French and Japanese too.</p>
       <p class="md:text-xl mb-8">
         I offer extra services like copywriting, photo & videography, teaching
         and audio production.
@@ -253,7 +256,7 @@
           </p>
           <p class="md:text-xl mb-8">
             Happy to get in touch via video, phone or for a cup of tea in
-            Brugge, Belgium!
+            Bruges, Belgium!
           </p>
           <p class="md:text-xl mb-8">
             Looking forward to creating value in the world together! 🙏
@@ -321,7 +324,7 @@ export default {
         },
         {
           src: "/images/ukraine/alex-with-grandfather.png",
-          alt: "My granfather and me",
+          alt: "My grandfather and me",
         },
         {
           src: "/images/ukraine/alex-with-grandparents-and-mother.png",
@@ -331,9 +334,9 @@ export default {
       nonProfits: [
         {
           name: "Himalayan Projects",
-          url: "http://www.himalayanprojects.brugseverenigingen.be/",
+          url: "https://himalayan-projects.org/",
           description:
-            "Belgium-based organisation helping Nepalese rural areas with medical care, education and disaster response. Website management and IT support.",
+            "Belgium-based organization helping Nepalese rural areas with medical care, education and disaster response. Web development and IT support.",
           imageUrl: "/images/non-profits/himalayan-projects.png",
         },
         {
@@ -348,7 +351,7 @@ export default {
           name: "Testament",
           url: "https://www.testament.be/",
           description:
-            "Belgian organisation helping people with their last will and promoting declaring a good cause in it. IT support, photography and video content management.",
+            "Belgian organization helping people with their last will and promoting declaring a good cause in it. IT support, photography and video content management.",
           imageUrl: "/images/non-profits/testament.png",
         },
         {
@@ -395,19 +398,19 @@ export default {
       ],
       studioPortraits: [
         {
-          imageUrl: "/images/studio-portraits/testament-woman.png",
+          imageUrl: "/images/studio-portraits/1.jpg",
         },
         {
-          imageUrl: "/images/studio-portraits/nat.png",
+          imageUrl: "/images/studio-portraits/2.jpg",
         },
         {
-          imageUrl: "/images/studio-portraits/dircus.png",
+          imageUrl: "/images/studio-portraits/3.jpg",
         },
         {
-          imageUrl: "/images/studio-portraits/xana.png",
+          imageUrl: "/images/studio-portraits/4.jpg",
         },
         {
-          imageUrl: "/images/studio-portraits/elouise.png",
+          imageUrl: "/images/studio-portraits/5.jpg",
         },
       ],
       paintings: [
@@ -434,15 +437,19 @@ export default {
       ],
       musicTracks: [
         {
-          title: "Playing God",
-          url: "/audio/songs/Deep Iris - Untitled - 06 Playing God.mp3",
+          title: "Never Stop",
+          url: "/audio/songs/atlesque-never-stop.mp3",
         },
         {
-          title: "War",
-          url: "/audio/songs/Deep Iris - Untitled - 02 War.mp3",
+          title: "Eva",
+          url: "/audio/songs/deep-iris-eva.mp3",
         },
       ],
       technologies: [
+        {
+          name: "React",
+          imageUrl: "/images/technologies/react.png",
+        },
         {
           name: "Vue",
           imageUrl: "/images/technologies/vue.png",
@@ -450,10 +457,6 @@ export default {
         {
           name: "Nuxt",
           imageUrl: "/images/technologies/nuxt.png",
-        },
-        {
-          name: "React",
-          imageUrl: "/images/technologies/react.png",
         },
         {
           name: "Node",
@@ -466,18 +469,25 @@ export default {
       ],
       projects: [
         {
-          name: "Among Us Detective",
-          url: "https://amongusdetective.com/",
-          description:
-            "An open-source tracking tool for the popular online game Among Us by InnerSloth. Written in Vue.",
-          imageUrl: "/images/projects/among-us-detective.png",
-        },
-        {
           name: "Stuurkracht",
           url: "https://stuurkracht.be/",
           description:
             "An open-source web app for sending e-cards to people who you care about and are in need of support. Full-stack in Nest and Nuxt.",
           imageUrl: "/images/projects/stuurkracht.png",
+        },
+        {
+          name: "Among Us Detective",
+          url: "https://www.starcasino.be/",
+          description:
+            "An open-source tracking tool for the popular online game Among Us by InnerSloth. Written in Vue.",
+          imageUrl: "/images/projects/among-us-detective.png",
+        },
+        {
+          name: "Starcasino",
+          url: "https://www.starcasino.be/",
+          description:
+            "Customer-facing websites for Belgian casinos (Starcasino, SC Dice, SC Sport). Using React, Next.js, MUI and TypeScript.",
+          imageUrl: "/images/projects/starcasino.png",
         },
         {
           name: "ZBaduk",
@@ -486,15 +496,16 @@ export default {
             "Web app using Artificial Intelligence to analyze Go (Baduk) games. Helped improve the UI written in Angular with TypeScript.",
           imageUrl: "/images/projects/zbaduk.png",
         },
-        {
+        /* {
           name: "Clarus",
           url: "https://www.clarus.biz/",
           description:
-            "App used by Belgian funeral directors, crematoriums and municipalities to manage their death certificates and concession needs. Written in Vue and Nuxt.",
+            "Web app used by Belgian funeral directors, crematoriums and municipalities to manage their death certificates and concession needs. Using Vue and Nuxt.",
           imageUrl: "/images/projects/clarus.png",
-        },
+        }, */
       ],
     };
   },
 };
 </script>
+
