@@ -8,7 +8,7 @@
         rel="noopener"
         class="link"
         >open-source</a
-      >, written in Vue/Nuxt
+      >, written in Vue/Nuxt.
     </p>
     <p class="p">
       Part of
