@@ -1,3 +1,7 @@
+const SEO_TITLE = "Alexander Van Maele";
+const SEO_DESCRIPTION =
+  "Freelance software developer from Brugge, Belgium. Front-end development in React, Vue and UI/UX design.";
+
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: "static",
@@ -10,7 +14,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: "Alexander Van Maele",
+    title: SEO_TITLE,
     titleTemplate: "%s | Freelance Software Developer",
     htmlAttrs: {
       lang: "en",
@@ -21,8 +25,7 @@ export default {
       {
         hid: "description",
         name: "description",
-        content:
-          "Freelance software developer based in Brugge, Belgium. Specialized in Vue and Node, front-end development and UI/UX design.",
+        content: SEO_DESCRIPTION,
       },
       { name: "format-detection", content: "telephone=no" },
       /*
@@ -31,14 +34,13 @@ export default {
       {
         hid: "og:title",
         property: "og:title",
-        content: "Alexander Van Maele",
+        content: SEO_TITLE,
         template: "%s | Freelance Software Developer",
       },
       {
         hid: "og:description",
         property: "og:description",
-        content:
-          "Freelance software developer based in Brugge, Belgium. Specialized in Vue and Node, front-end development and UI/UX design.",
+        content: SEO_DESCRIPTION,
       },
       {
         hid: "og:site_name",
@@ -109,3 +111,4 @@ export default {
     middleware: "remove-double-slash",
   },
 };
+
