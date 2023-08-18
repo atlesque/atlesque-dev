@@ -477,14 +477,14 @@ export default {
         },
         {
           name: "Among Us Detective",
-          url: "https://www.starcasino.be/",
+          url: "https://amongusdetective.com/",
           description:
             "An open-source tracking tool for the popular online game Among Us by InnerSloth. Written in Vue.",
           imageUrl: "/images/projects/among-us-detective.png",
         },
         {
           name: "Starcasino",
-          url: "https://www.starcasino.be/",
+          url: "https://starcasinodice.be/",
           description:
             "Customer-facing websites for Belgian casinos (Starcasino, SC Dice, SC Sport). Using React, Next.js, MUI and TypeScript.",
           imageUrl: "/images/projects/starcasino.png",
