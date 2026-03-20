@@ -19,8 +19,8 @@
           alt="Me sitting in grass with camera"
           class="object-contain"
           format="webp"
-          width="518px"
-          height="267px"
+          width="518"
+          height="267"
           quality="100"
         />
       </div>
@@ -35,8 +35,8 @@
             :alt="image.alt"
             class="object-contain"
             format="webp"
-            width="243px"
-            height="221px"
+            width="243"
+            height="221"
             quality="100"
           />
         </li>
@@ -60,8 +60,8 @@
                 nonProfit.imageClass,
               ]"
               format="webp"
-              width="208px"
-              height="50px"
+              width="208"
+              height="50"
               quality="100"
               fit="inside"
             />
@@ -87,8 +87,8 @@
               :alt="book.title"
               class="object-contain"
               format="webp"
-              width="188px"
-              height="249px"
+              width="188"
+              height="249"
               quality="100"
             />
           </a>
@@ -110,8 +110,8 @@
             alt="Studio portrait"
             class="object-contain"
             format="webp"
-            width="188px"
-            height="249px"
+            width="188"
+            height="249"
             quality="100"
           />
         </li>
@@ -128,8 +128,8 @@
             :title="painting.title"
             class="object-contain"
             format="webp"
-            width="188px"
-            height="249px"
+            width="188"
+            height="249"
             quality="100"
           />
         </li>
@@ -201,8 +201,8 @@
             :title="technology.name"
             class="object-contain"
             format="webp"
-            width="150px"
-            height="150px"
+            width="150"
+            height="150"
             quality="100"
             fit="outside"
           />
@@ -223,8 +223,8 @@
               :alt="project.name"
               :class="['object-contain mb-8 inline-block', project.imageClass]"
               format="webp"
-              width="208px"
-              height="50px"
+              width="208"
+              height="50"
               quality="100"
               fit="inside"
             />
@@ -300,8 +300,8 @@
               alt="Portrait of me"
               class="object-contain h-full"
               format="webp"
-              width="278px"
-              height="278px"
+              width="278"
+              height="278"
               quality="100"
               fit="inside"
             />
@@ -312,9 +312,12 @@
   </main>
 </template>
 
+<script setup>
+definePageMeta({ layout: "full-width" });
+</script>
+
 <script>
 export default {
-  layout: "fullWidth",
   data() {
     return {
       ukraineImages: [

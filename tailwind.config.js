@@ -1,6 +1,6 @@
 module.exports = {
   mode: "jit",
-  content: ["./**/*.{js,jsx,ts,tsx,vue}", "./content/**/*.md"],
+  content: ["./app/**/*.{js,jsx,ts,tsx,vue}", "./content/**/*.md"],
   theme: {
     colors: {
       /*
