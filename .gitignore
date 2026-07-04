@@ -95,3 +95,6 @@ sw.*
 # Nuxt 4
 .output
 .data
+
+# Astro
+.astro/
