@@ -90,7 +90,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-16 md:mb-32">
         {
           books.map((book) => (
-            <li class="shadow-md">
+            <li>
               <a href={book.url} target="_blank" rel="noopener" title={book.title}>
                 <img
                   src={book.imageUrl}
@@ -113,7 +113,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-8">
         {
           studioPortraits.map((portrait) => (
-            <li class="shadow-md">
+            <li>
               <img
                 src={portrait.src}
                 alt={portrait.alt}
@@ -129,7 +129,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
       <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-8">
         {
           paintings.map((painting) => (
-            <li class="shadow-md">
+            <li>
               <img
                 src={painting.imageUrl}
                 alt={`Painting entitled ${painting.title}`}
