@@ -1,10 +1,12 @@
 // @ts-check
-import withNuxt from "./.nuxt/eslint.config.mjs";
+import eslintPluginAstro from "eslint-plugin-astro";
 
-export default withNuxt({
-  rules: {
-    "no-console": "off",
-    "no-debugger": "off",
-    "vue/no-v-html": "off",
+export default [
+  ...eslintPluginAstro.configs.recommended,
+  {
+    rules: {
+      "no-console": "off",
+      "no-debugger": "off",
+    },
   },
-});
+];

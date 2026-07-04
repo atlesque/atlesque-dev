@@ -1,0 +1,26 @@
+---
+import AudioPlayer from "@/components/AudioPlayer.vue";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout contentClass="">
+  <main>
+    <AudioPlayer
+      client:load
+      tracks={[
+        {
+          title: "Playing God",
+          url: "/audio/songs/Deep Iris - Untitled - 06 Playing God.mp3",
+        },
+        {
+          title: "Quick Time",
+          url: "/audio/songs/Deep Iris - Untitled - 08 Quick Time.mp3",
+        },
+        {
+          title: "Taylor",
+          url: "/audio/songs/Deep Iris - Untitled - 09 Taylor.mp3",
+        },
+      ]}
+    />
+  </main>
+</BaseLayout>

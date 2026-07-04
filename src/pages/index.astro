@@ -1,0 +1,316 @@
+---
+import CurlyBraceWrapper from "@/components/CurlyBraceWrapper.astro";
+import {
+books,
+musicTracks,
+nonProfits,
+paintings,
+projects,
+studioPortraits,
+technologies,
+ukraineImages,
+} from "@/data/homepage";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout contentClass="">
+  <main class="mb-16 md:mb-32">
+    <!-- Hero -->
+    <section id="hero" class="grid grid-cols-1 lg:grid-cols-2 mb-16 md:mb-32">
+      <div class="flex flex-col mr-8 mb-8">
+        <h1 class="headline-xl">
+          Hi, I'm <span class="text-red">Alex</span>ander
+        </h1>
+        <p class="md:text-xl mb-8">
+          As a freelance software developer, I help you build customer-facing
+          software, fully secure and with a smile!
+        </p>
+        <div class="flex">
+          <a href="#contact" class="button-primary">Contact me</a>
+        </div>
+      </div>
+      <div class="flex justify-end">
+        <img
+          src="/images/alex/alex-sitting-in-gras-with-camera.png"
+          alt="Me sitting in grass with camera"
+          class="object-contain"
+          width="518"
+          height="267"
+          loading="lazy"
+        />
+      </div>
+    </section>
+
+    <!-- My Story -->
+    <section id="my-story" class="mb-16 md:mb-32">
+      <h1 class="headline"><CurlyBraceWrapper>My story</CurlyBraceWrapper></h1>
+      <p class="md:text-xl mb-8">I was born in Donetsk, Ukraine in 1994:</p>
+      <ul class="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-16 md:mb-32">
+        {
+          ukraineImages.map((image) => (
+            <li>
+              <img
+                src={image.src}
+                alt={image.alt}
+                class="object-contain"
+                width="243"
+                height="221"
+                loading="lazy"
+              />
+            </li>
+          ))
+        }
+      </ul>
+      <p class="md:text-xl mb-8">
+        I'm passionate about helping others, that's why I love working with
+        non-profits:
+      </p>
+      <ul class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16 md:mb-32">
+        {
+          nonProfits.map((np) => (
+            <li class="bg-gray-extra-light p-8">
+              <a href={np.url} target="_blank" rel="noopener">
+                <img
+                  src={np.imageUrl}
+                  alt={np.name}
+                  class={`object-contain mb-8 inline-block ${np.imageClass ?? ""}`}
+                  width="208"
+                  height="50"
+                  loading="lazy"
+                />
+              </a>
+              <p>{np.description}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="md:text-xl mb-8">
+        I also love reading books! Here are some of my favorites:
+      </p>
+      <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-16 md:mb-32">
+        {
+          books.map((book) => (
+            <li class="shadow-md">
+              <a href={book.url} target="_blank" rel="noopener" title={book.title}>
+                <img
+                  src={book.imageUrl}
+                  alt={book.title}
+                  class="object-contain"
+                  width="188"
+                  height="249"
+                  loading="lazy"
+                />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="md:text-xl mb-8">
+        My other obsessions include
+        <a href="https://atlesque.com">photography</a>, art and music
+        production:
+      </p>
+      <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-8">
+        {
+          studioPortraits.map((portrait) => (
+            <li class="shadow-md">
+              <img
+                src={portrait.src}
+                alt={portrait.alt}
+                class="object-contain"
+                width="188"
+                height="249"
+                loading="lazy"
+              />
+            </li>
+          ))
+        }
+      </ul>
+      <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 mb-8">
+        {
+          paintings.map((painting) => (
+            <li class="shadow-md">
+              <img
+                src={painting.imageUrl}
+                alt={`Painting entitled ${painting.title}`}
+                title={painting.title}
+                class="object-contain"
+                width="188"
+                height="249"
+                loading="lazy"
+              />
+            </li>
+          ))
+        }
+      </ul>
+      {
+        musicTracks.map((track) => (
+          <audio controls class="w-full mb-8 last:mb-0">
+            <source src={track.url} />
+          </audio>
+        ))
+      }
+    </section>
+
+    <!-- Career -->
+    <section id="career" class="mb-16 md:mb-32">
+      <h1 class="headline">
+        <CurlyBraceWrapper>Career</CurlyBraceWrapper>
+      </h1>
+      <p class="md:text-xl mb-8">
+        I hold a
+        <span class="font-medium">Bachelor's degree in Computer Science</span>
+        and I'm a <span class="font-medium">Certified Ethical Hacker</span>.
+      </p>
+      <p class="md:text-xl mb-8">
+        I've taught <span class="font-medium">Digital Forensics</span> to the
+        Federal Computer Crime Unit of the
+        <span class="font-medium">Belgian police</span>.
+      </p>
+      <p class="md:text-xl mb-8">
+        I've presented
+        <span class="font-medium">talks on Internet-of-Things security</span>
+        and digital safety.
+      </p>
+      <p class="md:text-xl mb-8">
+        During my internship in Osaka, <span class="font-medium">Japan</span>,
+        we launched a cross-platform app for children that held
+        <a
+          class="link"
+          href="/images/others/night-zookeeper-appstore-2015.png"
+          target="_blank"
+          >first place in the Apple App Store</a
+        >.
+      </p>
+      <p class="md:text-xl mb-8">
+        I've founded my own company <span class="font-medium">Atlesque</span> in
+        2017. Four years later, my father joined me to expand our content
+        creation offerings under
+        <a class="link" href="https://atlesque.media">Atlesque Media</a>.
+      </p>
+    </section>
+
+    <!-- Expertise -->
+    <section id="expertise" class="mb-16 md:mb-32">
+      <h1 class="headline">
+        <CurlyBraceWrapper>Expertise</CurlyBraceWrapper>
+      </h1>
+      <p class="md:text-xl mb-8">
+        My favorite programming languages & frameworks are:
+      </p>
+      <ul class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-8 mb-16 md:mb-32">
+        {
+          technologies.map((tech) => (
+            <li class="flex items-center">
+              <img
+                src={tech.imageUrl}
+                alt={tech.name}
+                title={tech.name}
+                class="object-contain"
+                width="150"
+                height="150"
+                loading="lazy"
+              />
+            </li>
+          ))
+        }
+      </ul>
+      <p class="md:text-xl mb-8">
+        I've helped build commercial and open-source projects including:
+      </p>
+      <ul class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16 md:mb-32">
+        {
+          projects.map((project) => (
+            <li class="bg-gray-extra-light p-8">
+              <a href={project.url} target="_blank" rel="noopener">
+                <img
+                  src={project.imageUrl}
+                  alt={project.name}
+                  class={`object-contain mb-8 inline-block ${project.imageClass ?? ""}`}
+                  width="208"
+                  height="50"
+                  loading="lazy"
+                />
+              </a>
+              <p>{project.description}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="md:text-xl mb-8">
+        I've been writing code since I was 10. Professionally since 2015.
+      </p>
+      <p class="md:text-xl mb-8">
+        I speak Dutch, English and Russian fluently.
+      </p>
+      <p class="md:text-xl mb-8">I understand basic French and Japanese too.</p>
+      <p class="md:text-xl mb-8">
+        I offer extra services like copywriting, photo & videography, teaching
+        and audio production.
+      </p>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+      <h1 class="headline">
+        <CurlyBraceWrapper>Contact me</CurlyBraceWrapper>
+      </h1>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div>
+          <p class="md:text-xl mb-8">
+            Whether you're interested in a flexible workforce, a business
+            partner or a philantropic friend, I'm here to help!
+          </p>
+          <p class="md:text-xl mb-8">
+            Happy to get in touch via video, phone or for a cup of tea in
+            Bruges, Belgium!
+          </p>
+          <p class="md:text-xl mb-8">
+            Looking forward to creating value in the world together! 🙏
+          </p>
+        </div>
+        <div class="relative">
+          <address class="grid grid-cols-1 gap-8 justify-items-start relative z-10">
+            <a href="mailto:alexander@atlesque.com" class="button-primary"
+              >alexander@atlesque.com</a
+            >
+            <a href="tel:+32473372210" class="button-primary"
+              >+32 473 37 22 10</a
+            >
+            <a
+              href="https://www.linkedin.com/in/alexandervanmaele/"
+              target="_blank"
+              rel="noopener"
+              class="button-primary"
+              >LinkedIn</a
+            >
+            <a
+              href="https://www.instagram.com/atlesque/"
+              target="_blank"
+              rel="noopener"
+              class="button-primary"
+              >Instagram</a
+            >
+            <a
+              href="https://atlesque.com/"
+              target="_blank"
+              rel="noopener"
+              class="button-primary"
+              >Photography portfolio</a
+            >
+          </address>
+          <div class="absolute inset-0 z-0 py-4 flex items-center justify-end">
+            <img
+              src="/images/alex/alex-portrait-circle.png"
+              alt="Portrait of me"
+              class="object-contain h-full"
+              width="278"
+              height="278"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

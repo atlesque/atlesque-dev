@@ -1,0 +1,87 @@
+---
+import "@/styles/tailwind.css";
+import "@/styles/global.scss";
+import TheHeader from "@/components/TheHeader.astro";
+import TheFooter from "@/components/TheFooter.astro";
+import { SEO_TITLE, SEO_DESCRIPTION, SITE_URL } from "@/consts";
+
+interface Props {
+  /** Additional class for the content wrapper. Defaults to "page" for standard padding. */
+  contentClass?: string;
+  /** Page title for the browser tab. Appended to SEO_TITLE. */
+  title?: string;
+  /** Page-specific meta description. Falls back to SEO_DESCRIPTION. */
+  description?: string;
+  /** Page-specific OG image. Falls back to default. */
+  ogImage?: string;
+}
+
+const {
+  contentClass = "page",
+  title,
+  description = SEO_DESCRIPTION,
+  ogImage = `${SITE_URL}/og-image.jpg`,
+} = Astro.props;
+
+const fullTitle = title ? `${title} | Freelance Software Developer` : SEO_TITLE;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="format-detection" content="telephone=no" />
+
+    <title>{fullTitle}</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="atlesque.dev" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  </head>
+  <body>
+    <TheHeader />
+    <div class="pt-[98px]">
+      <div class={contentClass}>
+        <slot />
+      </div>
+    </div>
+    <TheFooter />
+
+    <script>
+      // Smooth scroll-to-hash behavior (replaces Nuxt router.options.ts scrollBehavior)
+      function scrollToHash() {
+        const { hash } = window.location;
+        if (hash) {
+          const el = document.querySelector(hash);
+          if (el) {
+            const top = el.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({ top, behavior: "smooth" });
+          }
+        }
+      }
+
+      // Handle initial load with hash
+      scrollToHash();
+
+      // Handle clicks on same-page hash links
+      document.addEventListener("click", (e) => {
+        const link = (e.target as HTMLElement).closest("a[href^='#']");
+        if (link) {
+          e.preventDefault();
+          const hash = link.getAttribute("href")!;
+          window.history.pushState(null, "", hash);
+          scrollToHash();
+        }
+      });
+    </script>
+  </body>
+</html>
