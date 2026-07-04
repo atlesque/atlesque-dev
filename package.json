@@ -8,14 +8,12 @@
     "build": "astro build",
     "start": "astro preview",
     "lint:js": "eslint .",
-    "lint:style": "stylelint \"**/*.{vue,astro,css,scss}\" --ignore-path .gitignore",
+    "lint:style": "stylelint \"**/*.{astro,css,scss}\" --ignore-path .gitignore",
     "lint": "pnpm run lint:js && pnpm run lint:style"
   },
   "dependencies": {
     "@astrojs/tailwind": "^6.0.0",
-    "@astrojs/vue": "^5.0.0",
-    "astro": "^5.0.0",
-    "vue": "^3.5.0"
+    "astro": "^5.0.0"
   },
   "devDependencies": {
     "eslint": "^9.0.0",

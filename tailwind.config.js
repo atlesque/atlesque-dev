@@ -1,6 +1,6 @@
 module.exports = {
   mode: "jit",
-  content: ["./src/**/*.{astro,js,jsx,ts,tsx,vue}"],
+  content: ["./src/**/*.{astro,js,jsx,ts,tsx}"],
   theme: {
     colors: {
       /*
@@ -44,6 +44,4 @@ module.exports = {
   },
   plugins: [],
 };
-
-
 

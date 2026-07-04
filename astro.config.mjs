@@ -1,5 +1,4 @@
 import tailwind from "@astrojs/tailwind";
-import vue from "@astrojs/vue";
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
@@ -9,7 +8,6 @@ export default defineConfig({
     tailwind({
       applyBaseStyles: false,
     }),
-    vue(),
   ],
   vite: {
     css: {
