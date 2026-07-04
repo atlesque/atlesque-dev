@@ -269,9 +269,6 @@
             <a href="mailto:alexander@atlesque.com" class="button-primary"
               >alexander@atlesque.com</a
             >
-            <a href="tel:+32473372210" class="button-primary"
-              >+32 473 37 22 10</a
-            >
             <a
               href="https://www.linkedin.com/in/alexandervanmaele/"
               target="_blank"
