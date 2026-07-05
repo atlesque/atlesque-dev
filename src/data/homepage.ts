@@ -56,14 +56,14 @@ export const nonProfits: NonProfitItem[] = [
     name: "Himalayan Projects",
     url: "https://himalayan-projects.org/",
     description:
-      "Belgium-based organization helping Nepalese rural areas with medical care, education and disaster response. Web development and IT support.",
+      "A Belgium-based organization supporting rural communities in Nepal with medical care, education and disaster response. I provide web development and IT support.",
     imageUrl: "/images/non-profits/himalayan-projects.png",
   },
   {
     name: "Ah-Lama",
     url: "https://ah-lama.com/",
     description:
-      "Buddhist teachings and courses for practitioners and enthusiasts. Spanning a worldwide network of volunteers. Web development and online practice support.",
+      "Buddhist teachings and courses for practitioners and enthusiasts, supported by a worldwide network of volunteers. I provide web development and online practice support.",
     imageUrl: "/images/non-profits/ah-lama.png",
     imageClass: "max-w-[20rem]",
   },
@@ -71,14 +71,14 @@ export const nonProfits: NonProfitItem[] = [
     name: "Testament",
     url: "https://www.testament.be/",
     description:
-      "Belgian organization helping people with their last will and promoting declaring a good cause in it. IT support, photography and video content management.",
+      "A Belgian organization that helps people arrange their last will and encourages them to include a good cause. I provide IT support, photography and video content management.",
     imageUrl: "/images/non-profits/testament.png",
   },
   {
     name: "De Innengaard",
     url: "https://innengaard.be/",
     description:
-      "A volunteer-driven ecological garden project supporting local agriculture. Participants can assemble their own flower bouquets. Web development, copywriting and photography.",
+      "A volunteer-driven ecological garden project supporting local agriculture, where visitors can pick their own flower bouquets. I provide web development, copywriting and photography.",
     imageUrl: "/images/non-profits/de-innengaard.png",
     imageClass: "max-w-[20rem]",
   },
@@ -178,28 +178,29 @@ export const projects: ProjectItem[] = [
     name: "Stuurkracht",
     url: "https://stuurkracht.be/",
     description:
-      "An open-source web app for sending e-cards to people who you care about and are in need of support. Full-stack in Nest and Nuxt.",
+      "An open-source web app for sending e-cards to the people you care about when they need a little support. Built full-stack with Nest and Nuxt.",
     imageUrl: "/images/projects/stuurkracht.png",
   },
   {
     name: "Among Us Detective",
     url: "https://amongusdetective.com/",
     description:
-      "An open-source tracking tool for the popular online game Among Us by InnerSloth. Written in Vue.",
+      "An open-source tracking tool for the popular online game Among Us by InnerSloth. Built with Vue.",
     imageUrl: "/images/projects/among-us-detective.png",
   },
   {
     name: "Starcasino",
     url: "https://starcasinodice.be/",
     description:
-      "Customer-facing websites for Belgian casinos (Starcasino, SC Dice, SC Sport). Using React, Next.js, MUI and TypeScript.",
+      "Customer-facing websites for Belgian casinos (Starcasino, SC Dice, SC Sport). Built with React, Next.js, MUI and TypeScript.",
     imageUrl: "/images/projects/starcasino.png",
   },
   {
     name: "ZBaduk",
     url: "https://www.zbaduk.com/",
     description:
-      "Web app using Artificial Intelligence to analyze Go (Baduk) games. Helped improve the UI written in Angular with TypeScript.",
+      "A web app that uses artificial intelligence to analyze Go (Baduk) games. I helped improve the UI, built in Angular with TypeScript.",
     imageUrl: "/images/projects/zbaduk.png",
   },
 ];
+
