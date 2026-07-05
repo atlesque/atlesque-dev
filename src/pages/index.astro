@@ -222,15 +222,14 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
         {
           projects.map((project) => (
             <li class="bg-gray-extra-light p-8">
-              <a href={project.url} target="_blank" rel="noopener">
+              <a href={project.url} target="_blank" rel="noopener" class="flex items-center gap-4 mb-8">
                 <img
                   src={project.imageUrl}
                   alt={project.name}
-                  class={`object-contain mb-8 inline-block ${project.imageClass ?? ""}`}
-                  width="208"
-                  height="50"
+                  class={`object-contain object-left inline-block h-[30px] w-auto ${project.imageClass ?? ""}`}
                   loading="lazy"
                 />
+                {project.showTitle && <span class="font-medium text-lg">{project.name}</span>}
               </a>
               <p>{project.description}</p>
             </li>

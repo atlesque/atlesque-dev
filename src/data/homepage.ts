@@ -29,6 +29,7 @@ export interface ProjectItem {
   description: string;
   imageUrl: string;
   imageClass?: string;
+  showTitle?: boolean;
 }
 
 export interface MusicTrack {
@@ -53,13 +54,6 @@ export const ukraineImages: ImageItem[] = [
 
 export const nonProfits: NonProfitItem[] = [
   {
-    name: "Himalayan Projects",
-    url: "https://himalayan-projects.org/",
-    description:
-      "A Belgium-based organization supporting rural communities in Nepal with medical care, education and disaster response. I provide web development and IT support.",
-    imageUrl: "/images/non-profits/himalayan-projects.png",
-  },
-  {
     name: "Ah-Lama",
     url: "https://ah-lama.com/",
     description:
@@ -75,12 +69,11 @@ export const nonProfits: NonProfitItem[] = [
     imageUrl: "/images/non-profits/testament.png",
   },
   {
-    name: "De Innengaard",
-    url: "https://innengaard.be/",
+    name: "Himalayan Projects",
+    url: "https://himalayan-projects.org/",
     description:
-      "A volunteer-driven ecological garden project supporting local agriculture, where visitors can pick their own flower bouquets. I provide web development, copywriting and photography.",
-    imageUrl: "/images/non-profits/de-innengaard.png",
-    imageClass: "max-w-[20rem]",
+      "A Belgium-based organization supporting rural communities in Nepal with medical care, education and disaster response. I provide web development and IT support.",
+    imageUrl: "/images/non-profits/himalayan-projects.png",
   },
 ];
 
@@ -175,6 +168,14 @@ export const technologies: TechnologyItem[] = [
 
 export const projects: ProjectItem[] = [
   {
+    name: "Mijn Burgerprofiel",
+    url: "https://www.mijnburgerprofiel.be/",
+    description:
+      "The Flemish government's digital citizen profile — a centralized portal for managing official documents, applications and government communications. I do frontend development in Vue, Nuxt and Nest.",
+    imageUrl: "/images/projects/mijn-burgerprofiel.jpg",
+    showTitle: true,
+  },
+  {
     name: "Stuurkracht",
     url: "https://stuurkracht.be/",
     description:
@@ -187,20 +188,15 @@ export const projects: ProjectItem[] = [
     description:
       "An open-source tracking tool for the popular online game Among Us by InnerSloth. Built with Vue.",
     imageUrl: "/images/projects/among-us-detective.png",
+    showTitle: true,
   },
   {
-    name: "Starcasino",
-    url: "https://starcasinodice.be/",
+    name: "Merlezingt",
+    url: "https://merlezingt.be/",
     description:
-      "Customer-facing websites for Belgian casinos (Starcasino, SC Dice, SC Sport). Built with React, Next.js, MUI and TypeScript.",
-    imageUrl: "/images/projects/starcasino.png",
-  },
-  {
-    name: "ZBaduk",
-    url: "https://www.zbaduk.com/",
-    description:
-      "A web app that uses artificial intelligence to analyze Go (Baduk) games. I helped improve the UI, built in Angular with TypeScript.",
-    imageUrl: "/images/projects/zbaduk.png",
+      "Web development, photography and content management for a Belgian folk musician.",
+    imageUrl: "/images/projects/merlezingt.jpg",
+    showTitle: true,
   },
 ];
 
