@@ -7,15 +7,16 @@ const navLinks = [
 ];
 ---
 
-<nav id="nav-menu" class="fixed z-40 w-full transition-all duration-500 bg-white">
-  <div class="page-padding page-width flex items-center justify-end lg:justify-start">
+<nav id="nav-menu" class="nav fixed z-40 w-full">
+  <div class="page-padding page-width nav-inner flex items-center justify-end lg:justify-start">
     <!-- Desktop nav -->
     <div class="items-center flex-1 hidden lg:flex">
       {
         navLinks.map((link) => (
           <a
             href={link.url}
-            class="nav-link whitespace-nowrap first:-ml-6"
+            class="nav-link whitespace-nowrap first:-ml-4"
+            data-section={link.url.split("#")[1]}
           >
             <span class="link-name">{link.text}</span>
           </a>
@@ -26,7 +27,7 @@ const navLinks = [
     <!-- Mobile hamburger -->
     <button
       id="mobile-menu-open"
-      class="flex items-center lg:hidden"
+      class="menu-button flex items-center lg:hidden"
       aria-label="Open navigation menu"
       aria-controls="mobile-menu"
       aria-expanded="false"
@@ -34,7 +35,6 @@ const navLinks = [
       <svg
         aria-hidden="true"
         focusable="false"
-        role="img"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 448 512"
         class="w-8 h-8"
@@ -45,89 +45,204 @@ const navLinks = [
         ></path>
       </svg>
     </button>
+  </div>
 
-    <!-- Mobile menu overlay -->
-    <div id="mobile-menu" class="mobile-menu" style="display: none;">
-      <div class="flex flex-col mobile-menu-inner">
-        <div class="flex justify-end pb-4">
-          <button
-            id="mobile-menu-close"
-            class="flex items-center w-6 h-6 mt-8"
-            aria-label="Close navigation menu"
+  <!-- Mobile menu overlay -->
+  <div id="mobile-menu" class="mobile-menu lg:hidden" data-open="false">
+    <div class="flex flex-col mobile-menu-inner">
+      <div class="flex justify-end pb-4">
+        <button
+          id="mobile-menu-close"
+          class="menu-button flex items-center w-6 h-6 mt-8"
+          aria-label="Close navigation menu"
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 320 512"
+            class="w-full"
           >
-            <svg
-              aria-hidden="true"
-              focusable="false"
-              role="img"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 320 512"
-              class="w-full"
-            >
-              <path
-                fill="currentColor"
-                d="M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z"
-              ></path>
-            </svg>
-          </button>
-        </div>
-        {
-          navLinks.map((link) => (
-            <a
-              href={link.url}
-              class="flex nav-link--mobile"
-            >
-              <span class="link-name">{link.text}</span>
-            </a>
-          ))
-        }
+            <path
+              fill="currentColor"
+              d="M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z"
+            ></path>
+          </svg>
+        </button>
       </div>
+      {
+        navLinks.map((link, i) => (
+          <a
+            href={link.url}
+            class="flex nav-link--mobile"
+            style={`--i: ${i}`}
+            data-section={link.url.split("#")[1]}
+          >
+            <span class="link-name">{link.text}</span>
+          </a>
+        ))
+      }
     </div>
   </div>
+
+  <!-- Scroll progress indicator -->
+  <div class="scroll-progress" aria-hidden="true"></div>
 </nav>
 
 <style>
+  .nav {
+    @apply bg-white;
+
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 0.4s ease,
+      border-color 0.4s ease,
+      box-shadow 0.4s ease;
+  }
+
+  .nav-inner {
+    transition: padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav.is-scrolled {
+    background-color: rgb(255 255 255 / 82%);
+    border-color: theme("colors.gray-light");
+    box-shadow: 0 8px 30px -20px rgb(14 10 6 / 35%);
+  }
+
+  @supports (backdrop-filter: blur(1px)) {
+    .nav.is-scrolled {
+      backdrop-filter: saturate(1.6) blur(12px);
+    }
+  }
+
+  .nav.is-scrolled .nav-inner {
+    @apply py-4;
+  }
+
   .nav-link {
-    @apply px-4 font-medium;
+    @apply relative px-4 py-1 font-medium rounded-full;
+
+    transition: color 0.2s ease;
   }
 
   .nav-link .link-name {
-    @apply border-b-2 border-transparent transition-colors duration-150;
+    @apply relative;
   }
 
-  .nav-link:hover .link-name,
-  .nav-link:active .link-name,
-  .nav-link:focus-visible .link-name {
-    @apply border-red;
+  .nav-link .link-name::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 2px;
+    border-radius: 2px;
+    background: theme("colors.red");
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-link:hover .link-name::after,
+  .nav-link:focus-visible .link-name::after,
+  .nav-link[aria-current] .link-name::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .nav-link[aria-current] {
+    @apply text-red-dark;
   }
 
   .nav-link:focus-visible,
   .nav-link--mobile:focus-visible,
-  #mobile-menu-open:focus-visible,
-  #mobile-menu-close:focus-visible {
-    @apply outline outline-2 outline-offset-4 outline-red rounded-sm;
+  .menu-button:focus-visible {
+    @apply outline outline-2 outline-offset-4 outline-red-dark rounded-sm;
+  }
+
+  .menu-button {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .menu-button:hover {
+    transform: scale(1.08);
+  }
+
+  .menu-button:active {
+    transform: scale(0.94);
   }
 
   .nav-link--mobile {
     @apply py-3 font-medium text-xl;
   }
 
+  .nav-link--mobile[aria-current] {
+    @apply text-red-dark;
+  }
+
   .mobile-menu {
-    @apply absolute inset-0 w-screen h-screen pl-16 pr-10 sm:pr-16 bg-white text-black overscroll-contain z-10 overflow-auto;
+    @apply fixed inset-0 w-screen h-screen pl-16 pr-10 sm:pr-16 bg-white text-black overscroll-contain z-10 overflow-auto;
+
+    visibility: hidden;
+    opacity: 0;
+    clip-path: circle(0% at calc(100% - 3.5rem) 3rem);
+    transition:
+      clip-path 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.3s ease,
+      visibility 0s linear 0.6s;
+  }
+
+  .mobile-menu[data-open="true"] {
+    visibility: visible;
+    opacity: 1;
+    clip-path: circle(150% at calc(100% - 3.5rem) 3rem);
+    transition:
+      clip-path 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.2s ease,
+      visibility 0s;
+  }
+
+  .mobile-menu .nav-link--mobile {
+    opacity: 0;
+    transform: translateX(24px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .mobile-menu[data-open="true"] .nav-link--mobile {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.12s + var(--i, 0) * 0.06s);
   }
 
   .mobile-menu-inner {
     min-height: calc(100vh + 1px);
   }
+
+  .scroll-progress {
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, theme("colors.red"), theme("colors.blue"));
+    transform: scaleX(var(--progress, 0));
+    transform-origin: left;
+    pointer-events: none;
+  }
 </style>
 
 <script>
+  const nav = document.getElementById("nav-menu")!;
   const mobileMenu = document.getElementById("mobile-menu")!;
   const openBtn = document.getElementById("mobile-menu-open")!;
   const closeBtn = document.getElementById("mobile-menu-close")!;
+  const isOpen = () => mobileMenu.dataset.open === "true";
 
   function setMenu(open: boolean) {
-    mobileMenu.style.display = open ? "block" : "none";
-    openBtn.style.display = open ? "none" : "";
+    mobileMenu.dataset.open = String(open);
     openBtn.setAttribute("aria-expanded", String(open));
     // Prevent the page from scrolling behind the overlay
     document.documentElement.style.overflow = open ? "hidden" : "";
@@ -146,10 +261,63 @@ const navLinks = [
     link.addEventListener("click", () => setMenu(false));
   });
 
-  // Close on Escape
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && mobileMenu.style.display === "block") {
+    if (!isOpen()) return;
+    // Close on Escape
+    if (e.key === "Escape") {
       setMenu(false);
+      return;
+    }
+    // Keep focus inside the open menu
+    if (e.key === "Tab") {
+      const focusables = mobileMenu.querySelectorAll<HTMLElement>("a, button");
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   });
+
+  // Compact header + scroll progress, batched per animation frame
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const { scrollY } = window;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      nav.classList.toggle("is-scrolled", scrollY > 8);
+      nav.style.setProperty("--progress", String(max > 0 ? scrollY / max : 0));
+      ticking = false;
+    });
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // Highlight the nav link of the section currently in view
+  const links = document.querySelectorAll<HTMLAnchorElement>("a[data-section]");
+  // Sections without a nav link (e.g. the hero) clear the highlight
+  const sections = document.querySelectorAll<HTMLElement>("main section[id]");
+
+  const spy = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        links.forEach((link) => {
+          if (link.dataset.section === entry.target.id) {
+            link.setAttribute("aria-current", "true");
+          } else {
+            link.removeAttribute("aria-current");
+          }
+        });
+      });
+    },
+    { rootMargin: "-45% 0px -50% 0px" },
+  );
+  sections.forEach((section) => spy.observe(section));
 </script>

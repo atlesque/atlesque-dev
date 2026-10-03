@@ -9,11 +9,15 @@ module.exports = {
       white: "#ffffff",
       "gray-light": "#E6E7E8",
       "gray-extra-light": "#F9F9F9",
+      "gray-dark": "#5C5650",
       black: "#0E0A06",
       /*
         Primary colours
       */
       red: "#F3665B",
+      // Darker shade of red for small text and filled buttons (WCAG AA on white)
+      "red-dark": "#C93A2F",
+      "red-light": "#FDE3E0",
       blue: "#577590",
       /*
         Utility
@@ -33,6 +37,7 @@ module.exports = {
       "2xl": ["1.953rem", 1.3], // Heading 1 - 31.25px
       "3xl": ["2.441rem", 1.3], // Headlines - 39.06px
       "4xl": ["3.052rem", 1.3], // XL-Headlines - 48.83px
+      "5xl": ["3.815rem", 1.15], // Hero - 61.04px
     },
     /*
       Custom fonts
@@ -40,8 +45,20 @@ module.exports = {
     fontFamily: {
       sans: ["Montserrat", "sans-serif"],
       serif: ["'Libre Baskerville'", "serif"],
+      mono: [
+        "ui-monospace",
+        "SFMono-Regular",
+        "Menlo",
+        "Consolas",
+        "'Liberation Mono'",
+        "monospace",
+      ],
+    },
+    extend: {
+      transitionTimingFunction: {
+        "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
+      },
     },
   },
   plugins: [],
 };
-

@@ -1,9 +1,23 @@
+html {
+  scroll-padding-top: 6rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 body {
   overflow-y: scroll;
 }
 
 ::selection {
-  @apply bg-gray-light;
+  @apply bg-red-light;
+}
+
+:focus-visible {
+  @apply outline outline-2 outline-offset-4 outline-red-dark;
 }
 
 .page-padding {
@@ -26,3 +40,80 @@ body {
   }
 }
 
+// Shared card surface used for non-profits and projects
+.card {
+  @apply relative bg-gray-extra-light p-8 rounded-2xl;
+
+  border: 1px solid transparent;
+  background-image: radial-gradient(
+    28rem circle at var(--px, 50%) var(--py, -20rem),
+    rgb(243 102 91 / 9%),
+    transparent 45%
+  );
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s ease,
+    border-color 0.3s ease;
+
+  // Animated accent bar
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2rem;
+    bottom: 2rem;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: theme("colors.red");
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover,
+  &:focus-within {
+    @apply border-gray-light;
+
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px -24px rgb(14 10 6 / 35%);
+
+    &::before {
+      transform: scaleY(1);
+    }
+  }
+
+  &:focus-within {
+    @apply outline outline-2 outline-offset-4 outline-red-dark;
+  }
+
+  // Make the whole card clickable via its main link
+  .card-link {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border-radius: inherit;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  .card-arrow {
+    @apply absolute top-8 right-8 w-5 h-5 text-red-dark;
+
+    opacity: 0;
+    transform: translate(-6px, 6px);
+    transition:
+      opacity 0.3s ease,
+      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover .card-arrow,
+  &:focus-within .card-arrow {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}

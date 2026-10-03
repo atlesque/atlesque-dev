@@ -1,0 +1,144 @@
+---
+/**
+ * Accessible image lightbox built on the native <dialog> element.
+ * Any button with [data-lightbox] (containing an <img>) opens it; buttons
+ * sharing the same data-lightbox value form a group navigable with arrow keys.
+ */
+---
+
+<dialog id="lightbox" class="lightbox">
+  <button class="lightbox-close" aria-label="Close" autofocus>
+    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" class="w-6 h-6">
+      <path
+        d="M6 6l12 12M18 6L6 18"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"></path>
+    </svg>
+  </button>
+  <img class="lightbox-image" alt="" decoding="async" />
+</dialog>
+
+<style>
+  .lightbox {
+    @apply p-0 bg-transparent max-w-none max-h-none overflow-visible;
+
+    width: fit-content;
+    height: fit-content;
+    margin: auto;
+  }
+
+  .lightbox::backdrop {
+    background: rgb(14 10 6 / 85%);
+    backdrop-filter: blur(6px);
+  }
+
+  .lightbox-image {
+    @apply block w-auto h-auto rounded-xl shadow-2xl;
+
+    max-width: min(92vw, 40rem);
+    max-height: 86vh;
+    object-fit: contain;
+  }
+
+  .lightbox-close {
+    @apply absolute top-3 right-3 z-10 text-white rounded-full p-2;
+
+    background: rgb(14 10 6 / 60%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .lightbox-close:hover {
+    transform: rotate(90deg);
+  }
+
+  .lightbox-close:focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-white;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .lightbox[open] {
+      animation: lightbox-in 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .lightbox[open]::backdrop {
+      animation: backdrop-in 0.3s ease;
+    }
+
+    .lightbox-image.is-switching {
+      animation: image-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  }
+
+  @keyframes lightbox-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.96);
+    }
+  }
+
+  @keyframes backdrop-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes image-in {
+    from {
+      opacity: 0.2;
+      transform: scale(0.98);
+    }
+  }
+</style>
+
+<script>
+  const dialog = document.getElementById("lightbox") as HTMLDialogElement;
+  const image = dialog.querySelector<HTMLImageElement>(".lightbox-image")!;
+  const closeButton = dialog.querySelector<HTMLButtonElement>(".lightbox-close")!;
+  let group: HTMLButtonElement[] = [];
+  let index = 0;
+  let opener: HTMLButtonElement | null = null;
+
+  function show(i: number) {
+    index = (i + group.length) % group.length;
+    const trigger = group[index];
+    const thumb = trigger.querySelector("img")!;
+    image.src = trigger.dataset.full ?? thumb.currentSrc;
+    image.alt = thumb.alt;
+    dialog.setAttribute("aria-label", thumb.alt);
+    image.classList.remove("is-switching");
+    void image.offsetWidth; // restart the animation
+    image.classList.add("is-switching");
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("button[data-lightbox]").forEach((button) => {
+    button.addEventListener("click", () => {
+      group = [
+        ...document.querySelectorAll<HTMLButtonElement>(
+          `button[data-lightbox="${button.dataset.lightbox}"]`,
+        ),
+      ];
+      opener = button;
+      show(group.indexOf(button));
+      dialog.showModal();
+      document.documentElement.style.overflow = "hidden";
+    });
+  });
+
+  closeButton.addEventListener("click", () => dialog.close());
+
+  // Close when clicking the backdrop
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+
+  dialog.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") show(index + 1);
+    if (e.key === "ArrowLeft") show(index - 1);
+  });
+
+  dialog.addEventListener("close", () => {
+    document.documentElement.style.overflow = "";
+    opener?.focus();
+  });
+</script>
