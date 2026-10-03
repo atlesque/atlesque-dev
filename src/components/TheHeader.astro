@@ -28,6 +28,8 @@ const navLinks = [
       id="mobile-menu-open"
       class="flex items-center lg:hidden"
       aria-label="Open navigation menu"
+      aria-controls="mobile-menu"
+      aria-expanded="false"
     >
       <svg
         aria-hidden="true"
@@ -88,9 +90,21 @@ const navLinks = [
     @apply px-4 font-medium;
   }
 
-  .nav-link .link-name:hover,
-  .nav-link .link-name:active {
-    @apply border-b-2 border-red;
+  .nav-link .link-name {
+    @apply border-b-2 border-transparent transition-colors duration-150;
+  }
+
+  .nav-link:hover .link-name,
+  .nav-link:active .link-name,
+  .nav-link:focus-visible .link-name {
+    @apply border-red;
+  }
+
+  .nav-link:focus-visible,
+  .nav-link--mobile:focus-visible,
+  #mobile-menu-open:focus-visible,
+  #mobile-menu-close:focus-visible {
+    @apply outline outline-2 outline-offset-4 outline-red rounded-sm;
   }
 
   .nav-link--mobile {
@@ -111,21 +125,31 @@ const navLinks = [
   const openBtn = document.getElementById("mobile-menu-open")!;
   const closeBtn = document.getElementById("mobile-menu-close")!;
 
-  openBtn.addEventListener("click", () => {
-    mobileMenu.style.display = "block";
-    openBtn.style.display = "none";
-  });
+  function setMenu(open: boolean) {
+    mobileMenu.style.display = open ? "block" : "none";
+    openBtn.style.display = open ? "none" : "";
+    openBtn.setAttribute("aria-expanded", String(open));
+    // Prevent the page from scrolling behind the overlay
+    document.documentElement.style.overflow = open ? "hidden" : "";
+    if (open) {
+      closeBtn.focus();
+    } else if (document.activeElement && mobileMenu.contains(document.activeElement)) {
+      openBtn.focus();
+    }
+  }
 
-  closeBtn.addEventListener("click", () => {
-    mobileMenu.style.display = "none";
-    openBtn.style.display = "";
-  });
+  openBtn.addEventListener("click", () => setMenu(true));
+  closeBtn.addEventListener("click", () => setMenu(false));
 
   // Close mobile menu when a link is clicked
   mobileMenu.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      mobileMenu.style.display = "none";
-      openBtn.style.display = "";
-    });
+    link.addEventListener("click", () => setMenu(false));
+  });
+
+  // Close on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && mobileMenu.style.display === "block") {
+      setMenu(false);
+    }
   });
 </script>
