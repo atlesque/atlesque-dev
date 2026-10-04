@@ -68,6 +68,7 @@
 
 .button-primary {
   @extend .button;
+
   @apply bg-red-dark;
 
   &:hover:not(:disabled, .disabled),

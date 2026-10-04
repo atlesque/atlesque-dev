@@ -541,11 +541,11 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
       box-shadow var(--dur) var(--ease-out);
   }
 
-  .polaroids li:nth-child(2n) .polaroid {
+  .polaroids li:nth-child(2n) {
     --rot: 2.5deg;
   }
 
-  .polaroids li:nth-child(3n) .polaroid {
+  .polaroids li:nth-child(3n) {
     --rot: -1deg;
   }
 
@@ -792,7 +792,9 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
 <script>
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const audios = document.querySelectorAll<HTMLAudioElement>(".track audio");
-  const AudioContextClass = window.AudioContext ?? (window as any).webkitAudioContext;
+  const AudioContextClass =
+    window.AudioContext ??
+    (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
   let context: AudioContext | null = null;
 
   // Frequency bands as FFT bin ranges (~86 Hz each): bass, low-mid, high-mid, treble
