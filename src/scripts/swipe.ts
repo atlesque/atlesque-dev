@@ -140,6 +140,11 @@ export function swipeable(el: HTMLElement, { onSwipe }: SwipeOptions = {}) {
 
   el.addEventListener("pointermove", (event) => {
     if (event.pointerId !== pointerId) return;
+    // The button was released somewhere we never heard about (e.g. outside the window)
+    if (event.pointerType === "mouse" && event.buttons === 0) {
+      end(event);
+      return;
+    }
     dx = event.clientX - startX;
     dy = event.clientY - startY;
 
@@ -167,8 +172,10 @@ export function swipeable(el: HTMLElement, { onSwipe }: SwipeOptions = {}) {
     el.style.rotate = rotate;
   });
 
-  el.addEventListener("pointerup", end);
-  el.addEventListener("pointercancel", end);
+  // The pointer is only captured once a drag starts, so before that the release
+  // can happen anywhere: listen on the window to always clear the press
+  window.addEventListener("pointerup", end);
+  window.addEventListener("pointercancel", end);
   el.addEventListener("lostpointercapture", end);
   el.addEventListener("dragstart", (event) => event.preventDefault());
   el.addEventListener(
