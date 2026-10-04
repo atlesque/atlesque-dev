@@ -1,88 +1,205 @@
 /**
- * Renders the hero photo as a coloured point cloud (public/models/hero.splat,
- * built by scripts/generate-hero-splat.py) with a tiny WebGL point renderer.
+ * Renders the hero 3D Gaussian splat (public/models/hero.splat, generated
+ * from the hero photo with TripoSplat, see scripts/README-hero-splat.md)
+ * with a small WebGL2 splat renderer.
  *
  * - Fine pointers: the figure turns towards the mouse.
  * - Touch: it sways slowly on its own.
  * - Anyone can drag to spin it all the way around.
- * Falls back to the plain photo without WebGL, without JS or when the user
+ * Falls back to the plain photo without WebGL2, without JS or when the user
  * prefers reduced motion (the canvas is simply never shown).
+ *
+ * File format: the common ".splat" layout, 32 bytes per Gaussian:
+ * position f32×3, scale f32×3, colour u8×4 (RGBA), rotation u8×4 (w,x,y,z).
  */
 
-const STRIDE = 10;
-const MAX_FOLLOW_YAW = 0.7; // radians the figure turns towards the mouse
+const ROW = 32;
+const TEX_WIDTH = 2048; // 4 texels per splat
+const MAX_FOLLOW_YAW = 0.7;
 const MAX_FOLLOW_PITCH = 0.18;
 const TAU = Math.PI * 2;
+/** Splat files are usually stored y-down, z-forward (OpenCV); flipping y and z turns them upright. */
+const FLIP_Y = true;
+/** TripoSplat's output faces +x; turn the camera so the figure faces the viewer. */
+const FRONT_YAW = -Math.PI / 2;
 
-const VERT = `
-attribute vec3 aPos; attribute vec3 aCol; attribute float aSize;
-uniform mat4 uMvp; uniform float uScale;
-varying vec3 vCol;
+const VERT = `#version 300 es
+precision highp float;
+precision highp int;
+uniform highp sampler2D uData;
+uniform mat4 uView, uProj;
+uniform vec2 uFocal, uViewport;
+in vec2 aCorner;
+in uint aIndex;
+out vec4 vColor;
+out vec2 vPos;
+
+vec4 texel(uint i, uint k) {
+  uint t = i * 4u + k;
+  return texelFetch(uData, ivec2(int(t % ${TEX_WIDTH}u), int(t / ${TEX_WIDTH}u)), 0);
+}
+
 void main() {
-  vec4 p = uMvp * vec4(aPos, 1.0);
-  gl_Position = p;
-  gl_PointSize = aSize * uScale / p.w;
-  vCol = aCol;
-}`;
-const FRAG = `
-precision mediump float;
-varying vec3 vCol;
-void main() {
-  float d = length(gl_PointCoord - 0.5);
-  if (d > 0.5) discard;
-  gl_FragColor = vec4(vCol * (1.15 - d * 0.5), 1.0);
+  vec4 t0 = texel(aIndex, 0u), t1 = texel(aIndex, 1u), t2 = texel(aIndex, 2u), t3 = texel(aIndex, 3u);
+  vec4 cam = uView * vec4(t0.xyz, 1.0);
+  vec4 clip = uProj * cam;
+  float bound = 1.2 * clip.w;
+  if (cam.z <= 0.0 || abs(clip.x) > bound || abs(clip.y) > bound) {
+    gl_Position = vec4(0.0, 0.0, 2.0, 1.0);
+    return;
+  }
+  mat3 vrk = mat3(t2.x, t2.y, t2.z, t2.y, t2.w, t3.x, t2.z, t3.x, t3.y);
+  mat3 J = mat3(
+    uFocal.x / cam.z, 0.0, -(uFocal.x * cam.x) / (cam.z * cam.z),
+    0.0, -uFocal.y / cam.z, (uFocal.y * cam.y) / (cam.z * cam.z),
+    0.0, 0.0, 0.0);
+  mat3 T = transpose(mat3(uView)) * J;
+  mat3 cov = transpose(T) * vrk * T;
+  cov[0][0] += 0.3;
+  cov[1][1] += 0.3;
+  float mid = 0.5 * (cov[0][0] + cov[1][1]);
+  float radius = length(vec2(0.5 * (cov[0][0] - cov[1][1]), cov[0][1]));
+  float l1 = mid + radius, l2 = mid - radius;
+  if (l2 < 0.0) {
+    gl_Position = vec4(0.0, 0.0, 2.0, 1.0);
+    return;
+  }
+  vec2 dir = normalize(vec2(cov[0][1], l1 - cov[0][0]));
+  vec2 major = min(sqrt(2.0 * l1), 1024.0) * dir;
+  vec2 minor = min(sqrt(2.0 * l2), 1024.0) * vec2(dir.y, -dir.x);
+  vColor = t1;
+  vPos = aCorner;
+  vec2 c = clip.xy / clip.w;
+  gl_Position = vec4(c + (aCorner.x * major + aCorner.y * minor) / uViewport, 0.0, 1.0);
 }`;
 
-function compile(gl: WebGLRenderingContext, type: number, src: string) {
+const FRAG = `#version 300 es
+precision highp float;
+in vec4 vColor;
+in vec2 vPos;
+out vec4 fragColor;
+void main() {
+  float a = -dot(vPos, vPos);
+  if (a < -4.0) discard;
+  float b = exp(a) * vColor.a;
+  fragColor = vec4(b * vColor.rgb, b);
+}`;
+
+interface Splats {
+  count: number;
+  data: Float32Array; // 16 floats per splat, laid out as 4 RGBA texels
+  centers: Float32Array;
+  height: number;
+}
+
+/** Parses the file, recentres it and precomputes each 3D covariance. */
+function parseSplats(buf: ArrayBuffer): Splats {
+  const count = Math.floor(buf.byteLength / ROW);
+  const f = new Float32Array(buf, 0, (count * ROW) / 4);
+  const u = new Uint8Array(buf);
+  const ys = new Float32Array(count);
+  const xs = new Float32Array(count);
+  const zs = new Float32Array(count);
+  for (let i = 0; i < count; i++) {
+    xs[i] = f[i * 8];
+    ys[i] = f[i * 8 + 1] * (FLIP_Y ? -1 : 1);
+    zs[i] = f[i * 8 + 2] * (FLIP_Y ? -1 : 1);
+  }
+  // Robust bounds (ignore the 1% outliers floaters tend to be)
+  const pct = (a: Float32Array, p: number) => {
+    const s = Float32Array.from(a).sort();
+    return s[Math.min(s.length - 1, Math.floor(p * s.length))];
+  };
+  const cx = (pct(xs, 0.01) + pct(xs, 0.99)) / 2;
+  const cy = (pct(ys, 0.01) + pct(ys, 0.99)) / 2;
+  const cz = (pct(zs, 0.01) + pct(zs, 0.99)) / 2;
+  const height = pct(ys, 0.99) - pct(ys, 0.01);
+
+  const data = new Float32Array(Math.ceil((count * 4) / TEX_WIDTH) * TEX_WIDTH * 4);
+  const centers = new Float32Array(count * 3);
+  const flip = FLIP_Y ? -1 : 1;
+  for (let i = 0; i < count; i++) {
+    const o = i * 16;
+    const x = xs[i] - cx, y = ys[i] - cy, z = zs[i] - cz;
+    centers.set([x, y, z], i * 3);
+    data[o] = x;
+    data[o + 1] = y;
+    data[o + 2] = z;
+    for (let k = 0; k < 4; k++) data[o + 4 + k] = u[i * ROW + 24 + k] / 255;
+
+    const sx = f[i * 8 + 3], sy = f[i * 8 + 4], sz = f[i * 8 + 5];
+    let qw = (u[i * ROW + 28] - 128) / 128;
+    let qx = (u[i * ROW + 29] - 128) / 128;
+    let qy = (u[i * ROW + 30] - 128) / 128;
+    let qz = (u[i * ROW + 31] - 128) / 128;
+    const qn = Math.hypot(qw, qx, qy, qz) || 1;
+    qw /= qn; qx /= qn; qy /= qn; qz /= qn;
+    // M = S * R, sigma = M^T M
+    const m = [
+      sx * (1 - 2 * (qy * qy + qz * qz)), sx * 2 * (qx * qy + qw * qz), sx * 2 * (qx * qz - qw * qy),
+      sy * 2 * (qx * qy - qw * qz), sy * (1 - 2 * (qx * qx + qz * qz)), sy * 2 * (qy * qz + qw * qx),
+      sz * 2 * (qx * qz + qw * qy), sz * 2 * (qy * qz - qw * qx), sz * (1 - 2 * (qx * qx + qy * qy)),
+    ];
+    const s00 = m[0] * m[0] + m[3] * m[3] + m[6] * m[6];
+    const s01 = m[0] * m[1] + m[3] * m[4] + m[6] * m[7];
+    const s02 = m[0] * m[2] + m[3] * m[5] + m[6] * m[8];
+    const s11 = m[1] * m[1] + m[4] * m[4] + m[7] * m[7];
+    const s12 = m[1] * m[2] + m[4] * m[5] + m[7] * m[8];
+    const s22 = m[2] * m[2] + m[5] * m[5] + m[8] * m[8];
+    // Flipping y and z negates the covariance terms that mix x with y or z
+    data[o + 8] = s00;
+    data[o + 9] = s01 * flip;
+    data[o + 10] = s02 * flip;
+    data[o + 11] = s11;
+    data[o + 12] = s12;
+    data[o + 13] = s22;
+  }
+  return { count, data, centers, height };
+}
+
+/** Column-major view matrix for a camera orbiting the origin; camera looks down +z, y up. */
+function orbitView(yaw: number, pitch: number, dist: number): Float32Array {
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  // rows of R = Rx(pitch) * Ry(yaw)
+  const r = [
+    [cy, 0, sy],
+    [sp * sy, cp, -sp * cy],
+    [-cp * sy, sp, cp * cy],
+  ];
+  // camera space: x right, y up, z forward (away from the viewer) => negate z row
+  return new Float32Array([
+    r[0][0], r[1][0], -r[2][0], 0,
+    r[0][1], r[1][1], -r[2][1], 0,
+    r[0][2], r[1][2], -r[2][2], 0,
+    0, 0, dist, 1,
+  ]);
+}
+
+function projection(fx: number, fy: number, w: number, h: number): Float32Array {
+  const near = 0.05, far = 50;
+  return new Float32Array([
+    (2 * fx) / w, 0, 0, 0,
+    0, (2 * fy) / h, 0, 0,
+    0, 0, far / (far - near), 1,
+    0, 0, -(far * near) / (far - near), 0,
+  ]);
+}
+
+function compile(gl: WebGL2RenderingContext, type: number, src: string) {
   const shader = gl.createShader(type)!;
   gl.shaderSource(shader, src);
   gl.compileShader(shader);
   return shader;
 }
 
-const FOCAL = 5.6;
-const DIST = 4.2;
-
-/** Column-major projection * translate(0,0,-DIST) * Rx(pitch) * Ry(yaw). */
-function viewProjection(yaw: number, pitch: number, aspect: number): Float32Array {
-  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
-  const near = 0.1, far = 10;
-  const rows = [
-    [cy, 0, sy],
-    [sp * sy, cp, -sp * cy],
-    [-cp * sy, sp, cp * cy],
-  ];
-  const a = FOCAL / aspect, b = FOCAL, c = (far + near) / (near - far), d = (2 * far * near) / (near - far);
-  const m = new Float32Array(16);
-  for (let j = 0; j < 3; j++) {
-    m[j * 4] = a * rows[0][j];
-    m[j * 4 + 1] = b * rows[1][j];
-    m[j * 4 + 2] = c * rows[2][j];
-    m[j * 4 + 3] = -rows[2][j];
-  }
-  m[14] = -c * DIST + d;
-  m[15] = DIST;
-  return m;
-}
-
 export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasElement) {
-  const gl = canvas.getContext("webgl", { antialias: true, alpha: true });
+  const gl = canvas.getContext("webgl2", { antialias: false, premultipliedAlpha: true });
   if (!gl) return;
 
-  const buf = await (await fetch(canvas.dataset.src!)).arrayBuffer();
-  const count = buf.byteLength / STRIDE;
-  const view = new DataView(buf);
-  const pos = new Float32Array(count * 3);
-  const col = new Float32Array(count * 3);
-  const size = new Float32Array(count);
-  for (let i = 0; i < count; i++) {
-    const o = i * STRIDE;
-    for (let k = 0; k < 3; k++) {
-      pos[i * 3 + k] = view.getInt16(o + k * 2, true) / 4096;
-      col[i * 3 + k] = view.getUint8(o + 6 + k) / 255;
-    }
-    size[i] = view.getUint8(o + 9) / 100;
-  }
+  const res = await fetch(canvas.dataset.src!);
+  if (!res.ok) return;
+  const splats = parseSplats(await res.arrayBuffer());
+  const { count, centers } = splats;
 
   const prog = gl.createProgram()!;
   gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, VERT));
@@ -91,21 +208,70 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
   if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
   gl.useProgram(prog);
 
-  for (const [name, data, n] of [["aPos", pos, 3], ["aCol", col, 3], ["aSize", size, 1]] as const) {
-    const b = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, b);
-    gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-    const loc = gl.getAttribLocation(prog, name);
-    gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc, n, gl.FLOAT, false, 0, 0);
-  }
-  const uMvp = gl.getUniformLocation(prog, "uMvp");
-  const uScale = gl.getUniformLocation(prog, "uScale");
-  gl.enable(gl.DEPTH_TEST);
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  const rows = splats.data.length / 4 / TEX_WIDTH;
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, TEX_WIDTH, rows, 0, gl.RGBA, gl.FLOAT, splats.data);
+
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  const quad = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-2, -2, 2, -2, 2, 2, -2, 2]), gl.STATIC_DRAW);
+  const aCorner = gl.getAttribLocation(prog, "aCorner");
+  gl.enableVertexAttribArray(aCorner);
+  gl.vertexAttribPointer(aCorner, 2, gl.FLOAT, false, 0, 0);
+
+  const order = new Uint32Array(count);
+  const indexBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, indexBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, order.byteLength, gl.DYNAMIC_DRAW);
+  const aIndex = gl.getAttribLocation(prog, "aIndex");
+  gl.enableVertexAttribArray(aIndex);
+  gl.vertexAttribIPointer(aIndex, 1, gl.UNSIGNED_INT, 0, 0);
+  gl.vertexAttribDivisor(aIndex, 1);
+
+  const uView = gl.getUniformLocation(prog, "uView");
+  const uProj = gl.getUniformLocation(prog, "uProj");
+  const uFocal = gl.getUniformLocation(prog, "uFocal");
+  const uViewport = gl.getUniformLocation(prog, "uViewport");
+  gl.uniform1i(gl.getUniformLocation(prog, "uData"), 0);
+
+  gl.disable(gl.DEPTH_TEST);
+  gl.enable(gl.BLEND);
+  gl.blendFuncSeparate(gl.ONE_MINUS_DST_ALPHA, gl.ONE, gl.ONE_MINUS_DST_ALPHA, gl.ONE);
+
+  // Front-to-back counting sort on view depth
+  const depths = new Int32Array(count);
+  const counts = new Uint32Array(65536);
+  const sortByDepth = (view: Float32Array) => {
+    const ax = view[2], ay = view[6], az = view[10];
+    let min = Infinity, max = -Infinity;
+    for (let i = 0; i < count; i++) {
+      const d = ax * centers[i * 3] + ay * centers[i * 3 + 1] + az * centers[i * 3 + 2];
+      depths[i] = d * 4096;
+      if (depths[i] < min) min = depths[i];
+      if (depths[i] > max) max = depths[i];
+    }
+    const scale = 65535 / Math.max(1, max - min);
+    counts.fill(0);
+    for (let i = 0; i < count; i++) {
+      depths[i] = ((depths[i] - min) * scale) | 0;
+      counts[depths[i]]++;
+    }
+    for (let i = 1; i < 65536; i++) counts[i] += counts[i - 1];
+    for (let i = count - 1; i >= 0; i--) order[--counts[depths[i]]] = i;
+    gl.bindBuffer(gl.ARRAY_BUFFER, indexBuf);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, order);
+  };
 
   const touchPrimary = window.matchMedia("(hover: none)").matches;
-  let yaw = 0, pitch = 0;
-  let mouseX = 0, mouseY = 0; // -1..1 relative to the figure
+  // Frame the figure so it fills ~85% of the canvas height
+  const dist = 3;
+  let yaw = 0, pitch = 0, sortedYaw = NaN, sortedPitch = NaN;
+  let mouseX = 0, mouseY = 0;
   let dragging = false, dragX = 0, dragY = 0, idleSince = 0;
   let width = 0, height = 0, visible = true;
 
@@ -138,7 +304,7 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
   });
   canvas.addEventListener("pointermove", (e) => {
     if (!dragging) return;
-    yaw += (e.clientX - dragX) * 0.011;
+    yaw -= (e.clientX - dragX) * 0.011;
     pitch = Math.max(-0.5, Math.min(0.5, pitch + (e.clientY - dragY) * 0.006));
     dragX = e.clientX;
     dragY = e.clientY;
@@ -151,6 +317,7 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
   canvas.addEventListener("pointercancel", release);
 
   let last = performance.now();
+  let shown = false;
   const frame = (now: number) => {
     requestAnimationFrame(frame);
     if (!visible || document.hidden) return;
@@ -158,22 +325,36 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
     last = now;
 
     if (!dragging && now - idleSince > 400) {
-      const targetYaw = touchPrimary ? Math.sin(now / 2600) * 0.45 : mouseX * MAX_FOLLOW_YAW;
-      const targetPitch = touchPrimary ? 0 : mouseY * MAX_FOLLOW_PITCH;
+      // the figure turns towards the mouse, i.e. the camera moves the other way
+      const targetYaw = touchPrimary ? Math.sin(now / 2600) * 0.45 : -mouseX * MAX_FOLLOW_YAW;
+      const targetPitch = touchPrimary ? 0 : -mouseY * MAX_FOLLOW_PITCH;
       // take the short way round after a full spin
-      const delta = ((targetYaw - yaw + Math.PI) % TAU + TAU) % TAU - Math.PI;
+      const delta = ((((targetYaw - yaw + Math.PI) % TAU) + TAU) % TAU) - Math.PI;
       const k = 1 - Math.exp(-dt * 4);
       yaw += delta * k;
       pitch += (targetPitch - pitch) * k;
     }
 
+    const view = orbitView(yaw + FRONT_YAW, pitch, dist);
+    if (Math.abs(yaw - sortedYaw) > 0.02 || Math.abs(pitch - sortedPitch) > 0.02 || isNaN(sortedYaw)) {
+      sortByDepth(view);
+      sortedYaw = yaw;
+      sortedPitch = pitch;
+    }
+
+    const focal = (height * 0.85 * dist) / splats.height;
+    gl.uniformMatrix4fv(uView, false, view);
+    gl.uniformMatrix4fv(uProj, false, projection(focal, focal, width, height));
+    gl.uniform2f(uFocal, focal, focal);
+    gl.uniform2f(uViewport, width, height);
     gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.uniformMatrix4fv(uMvp, false, viewProjection(yaw, pitch, width / height));
-    gl.uniform1f(uScale, 0.0125 * (FOCAL * height) / 2);
-    gl.drawArrays(gl.POINTS, 0, count);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, count);
+
+    if (!shown) {
+      shown = true;
+      container.classList.add("is-splat");
+    }
   };
   requestAnimationFrame(frame);
-
-  container.classList.add("is-splat");
 }

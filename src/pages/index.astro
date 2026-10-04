@@ -84,7 +84,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
             class="hero-splat"
             data-src="/models/hero.splat"
             role="img"
-            aria-label="Me sitting in grass with camera, as a 3D point cloud you can drag to rotate"
+            aria-label="Me sitting in grass with camera, as a 3D model you can drag to rotate"
           ></canvas>
         </div>
       </div>
@@ -458,7 +458,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     transition: opacity 0.8s var(--ease-out);
   }
 
-  /* 3D point-cloud version of the photo; shown once it has loaded (see hero-splat.ts) */
+  /* 3D Gaussian splat version of the photo; shown once it has loaded (see hero-splat.ts) */
   .hero-splat {
     position: absolute;
     inset: 0;
@@ -835,7 +835,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const audios = document.querySelectorAll<HTMLAudioElement>(".track audio");
 
-  // Swap the hero photo for the 3D point cloud once the page is idle
+  // Swap the hero photo for the 3D splat once the page is idle
   const heroSplat = document.querySelector<HTMLCanvasElement>(".hero-splat");
   if (heroSplat && !reducedMotion.matches) {
     const start = () =>
