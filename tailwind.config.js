@@ -56,7 +56,7 @@ module.exports = {
     },
     extend: {
       transitionTimingFunction: {
-        "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "out-soft": "cubic-bezier(0.25, 0.8, 0.25, 1)",
       },
     },
   },

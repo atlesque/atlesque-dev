@@ -2,21 +2,44 @@
 /**
  * Accessible image lightbox built on the native <dialog> element.
  * Any button with [data-lightbox] (containing an <img>) opens it; buttons
- * sharing the same data-lightbox value form a group navigable with arrow keys.
+ * sharing the same data-lightbox value form a slideshow, navigable with the
+ * arrow buttons, arrow keys or by swiping the image.
  */
 ---
 
 <dialog id="lightbox" class="lightbox">
-  <button class="lightbox-close" aria-label="Close" autofocus>
-    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" class="w-6 h-6">
-      <path
-        d="M6 6l12 12M18 6L6 18"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"></path>
-    </svg>
-  </button>
-  <img class="lightbox-image" alt="" decoding="async" />
+  <div class="lightbox-stage">
+    <img class="lightbox-image" alt="" decoding="async" />
+    <button class="lightbox-control lightbox-close" aria-label="Close" autofocus>
+      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" class="w-5 h-5">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        ></path>
+      </svg>
+    </button>
+    <button class="lightbox-control lightbox-nav lightbox-prev" aria-label="Previous image">
+      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" class="w-5 h-5">
+        <path
+          d="M15 5l-7 7 7 7"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path>
+      </svg>
+    </button>
+    <button class="lightbox-control lightbox-nav lightbox-next" aria-label="Next image">
+      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" class="w-5 h-5">
+        <path
+          d="M9 5l7 7-7 7"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path>
+      </svg>
+    </button>
+  </div>
+  <p class="lightbox-counter" aria-live="polite"></p>
 </dialog>
 
 <style>
@@ -33,47 +56,85 @@
     backdrop-filter: blur(6px);
   }
 
+  .lightbox-stage {
+    @apply relative;
+  }
+
   .lightbox-image {
-    @apply block w-auto h-auto rounded-xl shadow-2xl;
+    @apply block w-auto h-auto rounded-xl shadow-2xl cursor-grab;
 
     max-width: min(92vw, 40rem);
-    max-height: 86vh;
+    max-height: 82vh;
     object-fit: contain;
   }
 
-  .lightbox-close {
-    @apply absolute top-3 right-3 z-10 text-white rounded-full p-2;
+  .lightbox-image:global(.is-dragging) {
+    cursor: grabbing;
+  }
 
-    background: rgb(14 10 6 / 60%);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  .lightbox-control {
+    @apply absolute z-10 text-white rounded-full p-2;
+
+    background: rgb(14 10 6 / 55%);
+    transition:
+      transform var(--dur) var(--ease-out),
+      background-color var(--dur-fast) ease;
+  }
+
+  .lightbox-control:hover {
+    background: rgb(14 10 6 / 80%);
+  }
+
+  .lightbox-control:focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-white;
+  }
+
+  .lightbox-close {
+    @apply top-3 right-3;
   }
 
   .lightbox-close:hover {
     transform: rotate(90deg);
   }
 
-  .lightbox-close:focus-visible {
-    @apply outline outline-2 outline-offset-2 outline-white;
+  .lightbox-nav {
+    @apply top-1/2 -translate-y-1/2;
+  }
+
+  .lightbox-prev {
+    @apply left-3 md:-left-16;
+  }
+
+  .lightbox-next {
+    @apply right-3 md:-right-16;
+  }
+
+  .lightbox-prev:hover {
+    @apply -translate-x-0.5;
+  }
+
+  .lightbox-next:hover {
+    @apply translate-x-0.5;
+  }
+
+  .lightbox-counter {
+    @apply mt-4 text-center text-sm tracking-widest text-white/70;
   }
 
   @media (prefers-reduced-motion: no-preference) {
     .lightbox[open] {
-      animation: lightbox-in 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: lightbox-in 0.8s var(--ease-out);
     }
 
     .lightbox[open]::backdrop {
-      animation: backdrop-in 0.3s ease;
-    }
-
-    .lightbox-image.is-switching {
-      animation: image-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: backdrop-in 0.6s ease;
     }
   }
 
   @keyframes lightbox-in {
     from {
       opacity: 0;
-      transform: translateY(16px) scale(0.96);
+      transform: translateY(10px) scale(0.98);
     }
   }
 
@@ -82,33 +143,82 @@
       opacity: 0;
     }
   }
-
-  @keyframes image-in {
-    from {
-      opacity: 0.2;
-      transform: scale(0.98);
-    }
-  }
 </style>
 
 <script>
+  import { swipeable } from "@/scripts/swipe";
+
   const dialog = document.getElementById("lightbox") as HTMLDialogElement;
   const image = dialog.querySelector<HTMLImageElement>(".lightbox-image")!;
-  const closeButton = dialog.querySelector<HTMLButtonElement>(".lightbox-close")!;
+  const counter = dialog.querySelector<HTMLElement>(".lightbox-counter")!;
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const SOFT_EASE = "cubic-bezier(0.25, 0.8, 0.25, 1)";
   let group: HTMLButtonElement[] = [];
   let index = 0;
   let opener: HTMLButtonElement | null = null;
+  let token = 0;
+  let outgoing: Animation | null = null;
 
-  function show(i: number) {
+  const fullSrc = (trigger: HTMLButtonElement) =>
+    trigger.dataset.full ?? trigger.querySelector("img")!.currentSrc;
+
+  function preload(i: number) {
+    const trigger = group[(i + group.length) % group.length];
+    if (trigger) new Image().src = fullSrc(trigger);
+  }
+
+  /**
+   * Shows image `i`. The current image drifts out and fades, the next one is
+   * decoded off-screen and then glides in from the opposite side.
+   * `direction` is 1 for next, -1 for previous, 0 for no slide.
+   */
+  async function show(i: number, direction: -1 | 0 | 1 = 0, { swiped = false } = {}) {
+    const current = ++token;
     index = (i + group.length) % group.length;
     const trigger = group[index];
     const thumb = trigger.querySelector("img")!;
-    image.src = trigger.dataset.full ?? thumb.currentSrc;
-    image.alt = thumb.alt;
+    const animate = direction !== 0 && !reducedMotion.matches;
+
+    counter.textContent = `${index + 1} / ${group.length}`;
     dialog.setAttribute("aria-label", thumb.alt);
-    image.classList.remove("is-switching");
-    void image.offsetWidth; // restart the animation
-    image.classList.add("is-switching");
+
+    const next = new Image();
+    next.src = fullSrc(trigger);
+    const ready = next.decode().catch(() => {});
+
+    if (animate && !swiped && image.getAttribute("src")) {
+      outgoing?.cancel();
+      outgoing = image.animate(
+        [
+          { opacity: 1, translate: "0 0" },
+          { opacity: 0, translate: `${direction * -32}px 0` },
+        ],
+        { duration: 380, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "forwards" },
+      );
+      await outgoing.finished.catch(() => {});
+    }
+    await ready;
+    if (current !== token) return; // A newer navigation took over
+
+    image.src = next.src;
+    image.alt = thumb.alt;
+    await image.decode().catch(() => {});
+    if (current !== token) return;
+
+    outgoing?.cancel();
+    outgoing = null;
+    image.style.opacity = "";
+    if (animate) {
+      image.animate(
+        [
+          { opacity: 0, translate: `${direction * 32}px 0` },
+          { opacity: 1, translate: "0 0" },
+        ],
+        { duration: 700, easing: SOFT_EASE },
+      );
+    }
+    preload(index + 1);
+    preload(index - 1);
   }
 
   document.querySelectorAll<HTMLButtonElement>("button[data-lightbox]").forEach((button) => {
@@ -125,7 +235,14 @@
     });
   });
 
-  closeButton.addEventListener("click", () => dialog.close());
+  // Swiping the image flings it away and brings in the neighbour
+  swipeable(image, {
+    onSwipe: (direction) => show(index - direction, direction === 1 ? -1 : 1, { swiped: true }),
+  });
+
+  dialog.querySelector(".lightbox-close")!.addEventListener("click", () => dialog.close());
+  dialog.querySelector(".lightbox-prev")!.addEventListener("click", () => show(index - 1, -1));
+  dialog.querySelector(".lightbox-next")!.addEventListener("click", () => show(index + 1, 1));
 
   // Close when clicking the backdrop
   dialog.addEventListener("click", (e) => {
@@ -133,11 +250,13 @@
   });
 
   dialog.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowRight") show(index + 1);
-    if (e.key === "ArrowLeft") show(index - 1);
+    if (e.key === "ArrowRight") show(index + 1, 1);
+    if (e.key === "ArrowLeft") show(index - 1, -1);
   });
 
   dialog.addEventListener("close", () => {
+    token++;
+    image.style.opacity = "";
     document.documentElement.style.overflow = "";
     opener?.focus();
   });

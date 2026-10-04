@@ -92,7 +92,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
         {
           ukraineImages.map((image) => (
             <li>
-              <div class="polaroid">
+              <div class="polaroid" data-swipe>
                 <Image
                   src={resolveImage(image.src)}
                   alt={image.alt}
@@ -173,7 +173,13 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
         {
           portraits.map((portrait) => (
             <li class="flex justify-center">
-              <button type="button" class="artwork" data-lightbox="portraits" data-full={portrait.full}>
+              <button
+                type="button"
+                class="artwork"
+                data-lightbox="portraits"
+                data-full={portrait.full}
+                data-swipe
+              >
                 <Image
                   src={resolveImage(portrait.src)}
                   alt={portrait.alt}
@@ -196,6 +202,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
                 data-lightbox="paintings"
                 data-full={painting.full}
                 title={painting.title}
+                data-swipe
               >
                 <Image
                   src={resolveImage(painting.imageUrl)}
@@ -361,8 +368,8 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
             Looking forward to creating value in the world together! 🙏
           </p>
         </div>
-        <div class="relative reveal" style="--i: 2">
-          <address class="grid grid-cols-1 gap-8 justify-items-start relative z-10 not-italic">
+        <div class="contact-links reveal" style="--i: 2">
+          <address class="flex flex-col gap-6 items-start not-italic">
             <a href="mailto:alexander@atlesque.media" class="button-primary"
               >alexander@atlesque.media</a
             >
@@ -381,19 +388,17 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
               >Photography portfolio</a
             >
           </address>
-          <div class="absolute inset-0 z-0 py-4 flex items-center justify-end">
-            <div class="portrait h-full">
-              <svg class="portrait-ring" aria-hidden="true" focusable="false" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" stroke-width="0.6" stroke-dasharray="2 3"></circle>
-              </svg>
-              <Image
-                src={portraitImage}
-                alt="Portrait of me"
-                class="object-contain h-full w-auto relative"
-                width={278}
-                densities={[1, 2]}
-              />
-            </div>
+          <div class="portrait">
+            <svg class="portrait-ring" aria-hidden="true" focusable="false" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" stroke-width="0.6" stroke-dasharray="2 3"></circle>
+            </svg>
+            <Image
+              src={portraitImage}
+              alt="Portrait of me"
+              class="relative w-full h-auto"
+              width={278}
+              densities={[1, 2]}
+            />
           </div>
         </div>
       </div>
@@ -401,6 +406,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
   </main>
   <Lightbox />
 </BaseLayout>
+
 
 <style>
   /* ---------- Hero ---------- */
@@ -426,7 +432,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
 
   .hero-image {
     position: relative;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform var(--dur-slow) var(--ease-out);
   }
 
   /* Offset frame behind the hero photo */
@@ -437,7 +443,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     border: 2px solid theme("colors.red");
     border-radius: 1rem 0.25rem 1rem 1rem;
     transform: translate(14px, 14px);
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform var(--dur-slow) var(--ease-out);
     z-index: -1;
   }
 
@@ -446,38 +452,44 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
   }
 
   .hero-image:hover {
-    transform: translate(-4px, -4px);
+    transform: translate(-3px, -3px);
   }
 
   .hero-image:hover::before {
-    transform: translate(22px, 22px);
+    transform: translate(19px, 19px);
   }
 
   @media (prefers-reduced-motion: no-preference) {
     .caret {
-      animation: blink 1.1s steps(1) infinite;
+      animation: blink 1.6s var(--ease-in-out) infinite;
     }
 
     :global(.js) .hero-fade {
-      animation: fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-      animation-delay: calc(var(--d, 0) * 120ms);
+      animation: fade-up 1.3s var(--ease-out) both;
+      animation-delay: calc(0.2s + var(--d, 0) * 180ms);
     }
 
     .hero-title {
-      animation: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation: rise 1.3s var(--ease-out) both;
     }
 
     .hero-image {
-      animation: rise 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+      animation: rise 1.5s var(--ease-out) 0.15s both;
     }
 
     .hero-image::before {
-      animation: frame-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+      animation: frame-in 1.6s var(--ease-out) 0.5s both;
     }
   }
 
   @keyframes blink {
-    50% {
+    0%,
+    35% {
+      opacity: 1;
+    }
+
+    55%,
+    85% {
       opacity: 0;
     }
   }
@@ -485,14 +497,14 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
   /* Transform-only so the LCP element paints immediately */
   @keyframes rise {
     from {
-      transform: translateY(18px);
+      transform: translateY(12px);
     }
   }
 
   @keyframes fade-up {
     from {
       opacity: 0;
-      transform: translateY(16px);
+      transform: translateY(12px);
     }
   }
 
@@ -503,17 +515,30 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     }
   }
 
+  /* ---------- Draggable photos ---------- */
+  :global(.swipeable) {
+    position: relative;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  :global(.swipeable.is-dragging) {
+    z-index: 20;
+    cursor: grabbing;
+  }
+
   /* ---------- Polaroids ---------- */
   .polaroid {
-    @apply bg-white p-3 pb-8;
+    @apply bg-white p-3 pb-8 cursor-grab;
 
     box-shadow:
       0 1px 2px rgb(14 10 6 / 8%),
       0 12px 28px -14px rgb(14 10 6 / 35%);
     transform: rotate(var(--rot, -2deg));
     transition:
-      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 0.5s ease;
+      transform var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out);
   }
 
   .polaroids li:nth-child(2n) .polaroid {
@@ -524,11 +549,18 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     --rot: -1deg;
   }
 
-  .polaroid:hover {
-    transform: rotate(0deg) translateY(-6px) scale(1.03);
+  .polaroid:hover,
+  .polaroid:global(.is-dragging) {
+    transform: rotate(0deg) translateY(-4px) scale(1.02);
     box-shadow:
       0 1px 2px rgb(14 10 6 / 8%),
-      0 24px 40px -18px rgb(14 10 6 / 45%);
+      0 24px 40px -18px rgb(14 10 6 / 40%);
+  }
+
+  .polaroid:global(.is-dragging) {
+    box-shadow:
+      0 1px 2px rgb(14 10 6 / 8%),
+      0 34px 50px -20px rgb(14 10 6 / 45%);
   }
 
   /* ---------- Books ---------- */
@@ -536,23 +568,30 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     perspective: 900px;
   }
 
+  /* Tilt and lift are eased per frame from JS on pointer devices */
   .book :global(img) {
     border-radius: 2px 6px 6px 2px;
     box-shadow: 0 10px 24px -12px rgb(14 10 6 / 45%);
-    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transform: rotateX(calc(var(--rx, 0) * 1deg)) rotateY(calc(var(--ry, 0) * 1deg))
+      translateY(calc(var(--lift, 0) * -5px)) scale(calc(1 + var(--lift, 0) * 0.03));
     transition:
-      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 0.5s ease;
+      transform var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out);
+  }
+
+  .book:global(.is-smoothing) :global(img) {
+    transition: box-shadow var(--dur) var(--ease-out);
+  }
+
+  .book:not(:global(.has-smooth-tilt)):hover :global(img),
+  .book:focus-visible :global(img) {
+    --ry: -10;
+    --lift: 1;
   }
 
   .book:hover :global(img),
   .book:focus-visible :global(img) {
-    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, -12deg)) translateY(-6px) scale(1.04);
-    box-shadow: 0 24px 34px -16px rgb(14 10 6 / 55%);
-  }
-
-  .book:hover :global(img) {
-    transition-duration: 0.15s;
+    box-shadow: 0 22px 32px -16px rgb(14 10 6 / 50%);
   }
 
   .book:focus-visible {
@@ -568,30 +607,31 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     @apply block overflow-hidden rounded-lg cursor-zoom-in;
 
     transition:
-      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-      box-shadow 0.5s ease;
+      transform var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out);
   }
 
   .artwork :global(img) {
-    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform var(--dur-slow) var(--ease-out);
   }
 
   .artwork:hover,
-  .artwork:focus-visible {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 30px -18px rgb(14 10 6 / 60%);
+  .artwork:focus-visible,
+  .artwork:global(.is-dragging) {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 30px -18px rgb(14 10 6 / 50%);
   }
 
   .artwork:hover :global(img),
   .artwork:focus-visible :global(img) {
-    transform: scale(1.07);
+    transform: scale(1.04);
   }
 
   .artwork--glow:hover,
   .artwork--glow:focus-visible {
     box-shadow:
-      0 18px 30px -18px rgb(14 10 6 / 60%),
-      0 0 36px -6px rgb(243 102 91 / 55%);
+      0 18px 30px -18px rgb(14 10 6 / 50%),
+      0 0 36px -8px rgb(243 102 91 / 45%);
   }
 
   /* ---------- Music ---------- */
@@ -599,12 +639,12 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     @apply flex items-center gap-4 rounded-full bg-gray-extra-light pl-5 pr-1 py-1;
 
     border: 1px solid transparent;
-    transition: border-color 0.3s ease;
+    transition: border-color var(--dur) ease;
   }
 
   .track:hover,
   .track:focus-within,
-  .track.is-playing {
+  .track:global(.is-playing) {
     @apply border-gray-light;
   }
 
@@ -612,40 +652,44 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     @apply flex items-end gap-[3px] h-5 shrink-0;
   }
 
+  /* Bar levels come from an audio analyser while the track plays */
   .equalizer span {
-    @apply block w-[3px] rounded-full bg-red;
+    @apply block w-[3px] h-full rounded-full bg-red;
 
-    height: 30%;
-    transition: height 0.3s ease;
+    transform: scaleY(var(--level, 0.25));
+    transform-origin: bottom;
   }
 
-  .track.is-playing .equalizer span {
-    animation: eq 0.9s ease-in-out infinite alternate;
-  }
+  /* Fallback when the Web Audio API is unavailable */
+  @media (prefers-reduced-motion: no-preference) {
+    .track:global(.is-playing.no-analyser) .equalizer span {
+      animation: eq 1.6s var(--ease-in-out) infinite alternate;
+    }
 
-  .equalizer span:nth-child(2) {
-    animation-delay: -0.3s !important;
-  }
+    .track:global(.no-analyser) .equalizer span:nth-child(2) {
+      animation-delay: -0.5s;
+    }
 
-  .equalizer span:nth-child(3) {
-    animation-delay: -0.6s !important;
-  }
+    .track:global(.no-analyser) .equalizer span:nth-child(3) {
+      animation-delay: -1s;
+    }
 
-  .equalizer span:nth-child(4) {
-    animation-delay: -0.15s !important;
+    .track:global(.no-analyser) .equalizer span:nth-child(4) {
+      animation-delay: -0.25s;
+    }
   }
 
   @keyframes eq {
     0% {
-      height: 20%;
+      transform: scaleY(0.25);
     }
 
     50% {
-      height: 100%;
+      transform: scaleY(1);
     }
 
     100% {
-      height: 45%;
+      transform: scaleY(0.45);
     }
   }
 
@@ -681,13 +725,13 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     background: theme("colors.white");
     border: 2px solid theme("colors.red");
     transition:
-      background-color 0.3s ease,
-      transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      background-color var(--dur) ease,
+      transform var(--dur) var(--ease-out);
   }
 
   .timeline > p:hover::before {
     background: theme("colors.red");
-    transform: scale(1.3);
+    transform: scale(1.2);
   }
 
   /* ---------- Technologies ---------- */
@@ -695,27 +739,33 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     @apply rounded-2xl p-4;
 
     transition:
-      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-      background-color 0.3s ease;
+      transform var(--dur) var(--ease-out),
+      background-color var(--dur) ease;
   }
 
   .tech :global(img) {
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform var(--dur) var(--ease-out);
   }
 
   .tech:hover {
     @apply bg-gray-extra-light;
 
-    transform: translateY(-4px);
+    transform: translateY(-3px);
   }
 
   .tech:hover :global(img) {
-    transform: scale(1.08) rotate(-4deg);
+    transform: scale(1.04);
   }
 
-  /* ---------- Contact portrait ---------- */
+  /* ---------- Contact ---------- */
+
+  /* Buttons and portrait sit side by side and wrap rather than overlap */
+  .contact-links {
+    @apply flex flex-wrap items-center gap-x-12 gap-y-10;
+  }
+
   .portrait {
-    @apply relative aspect-square flex items-center justify-center;
+    @apply relative shrink-0 w-48 md:w-56 m-3;
   }
 
   .portrait-ring {
@@ -728,7 +778,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
 
   @media (prefers-reduced-motion: no-preference) {
     .portrait-ring {
-      animation: spin 40s linear infinite;
+      animation: spin 90s linear infinite;
     }
   }
 
@@ -740,16 +790,106 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
 </style>
 
 <script>
-  // Equalizer state + only one track playing at a time
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const audios = document.querySelectorAll<HTMLAudioElement>(".track audio");
+  const AudioContextClass = window.AudioContext ?? (window as any).webkitAudioContext;
+  let context: AudioContext | null = null;
+
+  // Frequency bands as FFT bin ranges (~86 Hz each): bass, low-mid, high-mid, treble
+  const BANDS: [number, number][] = [
+    [1, 4],
+    [4, 12],
+    [12, 32],
+    [32, 80],
+  ];
+  const REST = 0.25;
+
+  interface Meter {
+    analyser: AnalyserNode;
+    data: Uint8Array<ArrayBuffer>;
+    bars: HTMLElement[];
+    levels: number[];
+    peaks: number[];
+    floors: number[];
+    playing: boolean;
+  }
+  const meters = new Map<HTMLAudioElement, Meter>();
+  let frame = 0;
+
+  function connect(audio: HTMLAudioElement): Meter | null {
+    if (meters.has(audio)) return meters.get(audio)!;
+    if (!AudioContextClass || reducedMotion.matches) return null;
+    try {
+      context ??= new AudioContextClass();
+      const source = context.createMediaElementSource(audio);
+      const analyser = context.createAnalyser();
+      analyser.fftSize = 512;
+      analyser.smoothingTimeConstant = 0.8;
+      source.connect(analyser);
+      analyser.connect(context.destination);
+      const meter: Meter = {
+        analyser,
+        data: new Uint8Array(analyser.frequencyBinCount),
+        bars: [...audio.closest(".track")!.querySelectorAll<HTMLElement>(".equalizer span")],
+        levels: BANDS.map(() => REST),
+        peaks: BANDS.map(() => 0.2),
+        floors: BANDS.map(() => 0),
+        playing: false,
+      };
+      meters.set(audio, meter);
+      return meter;
+    } catch {
+      return null;
+    }
+  }
+
+  function render() {
+    let active = false;
+    meters.forEach((meter) => {
+      meter.analyser.getByteFrequencyData(meter.data);
+      BANDS.forEach(([from, to], i) => {
+        let sum = 0;
+        for (let bin = from; bin < to; bin++) sum += meter.data[bin];
+        const raw = sum / (to - from) / 255;
+        // Auto-range each band between a slowly rising floor and a slowly
+        // decaying peak, so every bar follows the dynamics of its own band
+        meter.peaks[i] = Math.max(raw, meter.peaks[i] * 0.995, 0.05);
+        meter.floors[i] =
+          raw < meter.floors[i] ? raw : meter.floors[i] + (raw - meter.floors[i]) * 0.01;
+        const range = meter.peaks[i] - meter.floors[i] + 0.02;
+        const energy = Math.max(0, Math.min(1, (raw - meter.floors[i]) / range));
+        const target = meter.playing ? REST * 0.6 + (1 - REST * 0.6) * energy : REST;
+        // Rise a little quicker than fall, both eased, so the bars breathe
+        const ease = target > meter.levels[i] ? 0.25 : 0.1;
+        meter.levels[i] += (target - meter.levels[i]) * ease;
+        meter.bars[i].style.setProperty("--level", meter.levels[i].toFixed(3));
+        if (meter.playing || Math.abs(meter.levels[i] - REST) > 0.005) active = true;
+      });
+    });
+    frame = active ? requestAnimationFrame(render) : 0;
+  }
+
   audios.forEach((audio) => {
     const track = audio.closest(".track")!;
     audio.addEventListener("play", () => {
+      // Only one track playing at a time
       audios.forEach((other) => other !== audio && other.pause());
       track.classList.add("is-playing");
+      const meter = connect(audio);
+      if (!meter) {
+        track.classList.add("no-analyser");
+        return;
+      }
+      context?.resume();
+      meter.playing = true;
+      if (!frame) frame = requestAnimationFrame(render);
     });
     ["pause", "ended"].forEach((event) =>
-      audio.addEventListener(event, () => track.classList.remove("is-playing")),
+      audio.addEventListener(event, () => {
+        track.classList.remove("is-playing");
+        const meter = meters.get(audio);
+        if (meter) meter.playing = false;
+      }),
     );
   });
 </script>
