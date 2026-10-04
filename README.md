@@ -1,68 +1,36 @@
-# Atlesque.dev - Software Development Portfolio
+# Atlesque.dev
 
-My portfolio of software development.
+Source for [atlesque.dev](https://atlesque.dev), a personal software development portfolio. It is a static site built with [Astro](https://astro.build) 5, Tailwind CSS and SCSS.
 
-## Build Setup
+## Requirements
+
+- Node 24 (see `.nvmrc`)
+- pnpm 11 (pinned in `package.json` via `packageManager`; enable it with `corepack enable`)
+
+## Getting started
 
 ```bash
 # install dependencies
-$ npm install
+pnpm install
 
-# serve with hot reload at localhost:3000
-$ npm run dev
+# start the dev server with hot reload at http://localhost:4321
+pnpm dev
 
-# build for production and launch server
-$ npm run build
-$ npm run start
+# lint JavaScript/Astro (ESLint) and styles (Stylelint)
+pnpm lint
 
-# generate static project
-$ npm run generate
+# build the static site into dist/
+pnpm build
+
+# preview the production build locally
+pnpm start
 ```
 
-For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
+## Where things live
 
-## Debugging
-
-If you want to enable debugging in VSCode, create a new file `.vscode/launch.json`:
-
-```json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "client: chrome",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}"
-    },
-    {
-      "type": "pwa-node",
-      "request": "launch",
-      "name": "server: nuxt",
-      "args": ["dev"],
-      "osx": {
-        "program": "${workspaceFolder}/node_modules/.bin/nuxt"
-      },
-      "linux": {
-        "program": "${workspaceFolder}/node_modules/.bin/nuxt"
-      },
-      "windows": {
-        "program": "${workspaceFolder}/node_modules/nuxt/bin/nuxt.js"
-      },
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/**",
-        "!**/node_modules/**"
-      ]
-    }
-  ],
-  "compounds": [
-    {
-      "name": "fullstack: nuxt",
-      "configurations": ["server: nuxt", "client: chrome"]
-    }
-  ]
-}
-```
-
-And click Run > Start debugging. You can choose to debug either client-side, server-side or both at the same time.
+- `src/data/homepage.ts` holds the homepage content (types and data). Edit this file to change what the homepage shows.
+- `src/pages/` has the routes: `index.astro` and `404.astro`.
+- `src/layouts/` and `src/components/` contain the shared layout and UI components.
+- `src/styles/` has the global styles.
+- `public/` holds static assets served as-is.
+- `astro.config.mjs` configures the site (static output, Tailwind integration).
