@@ -432,7 +432,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
 
   .hero-image {
     position: relative;
-    transition: transform var(--dur-slow) var(--ease-out);
+    transition: transform 1.4s var(--ease-in-out);
   }
 
   /* Offset frame behind the hero photo */
@@ -443,7 +443,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     border: 2px solid theme("colors.red");
     border-radius: 1rem 0.25rem 1rem 1rem;
     transform: translate(14px, 14px);
-    transition: transform var(--dur-slow) var(--ease-out);
+    transition: transform 1.4s var(--ease-in-out);
     z-index: -1;
   }
 
@@ -457,6 +457,13 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
 
   .hero-image:hover::before {
     transform: translate(19px, 19px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-image,
+    .hero-image::before {
+      transition: none;
+    }
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -474,11 +481,11 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     }
 
     .hero-image {
-      animation: rise 1.5s var(--ease-out) 0.15s both;
+      animation: rise 1.5s var(--ease-out) 0.15s backwards;
     }
 
     .hero-image::before {
-      animation: frame-in 1.6s var(--ease-out) 0.5s both;
+      animation: frame-in 1.6s var(--ease-out) 0.5s backwards;
     }
   }
 
