@@ -95,13 +95,13 @@ const navLinks = [
 
     border-bottom: 1px solid transparent;
     transition:
-      background-color 0.4s ease,
-      border-color 0.4s ease,
-      box-shadow 0.4s ease;
+      background-color var(--dur) ease,
+      border-color var(--dur) ease,
+      box-shadow var(--dur) ease;
   }
 
   .nav-inner {
-    transition: padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: padding var(--dur) var(--ease-out);
   }
 
   .nav.is-scrolled {
@@ -123,7 +123,7 @@ const navLinks = [
   .nav-link {
     @apply relative px-4 py-1 font-medium rounded-full;
 
-    transition: color 0.2s ease;
+    transition: color var(--dur-fast) ease;
   }
 
   .nav-link .link-name {
@@ -141,7 +141,7 @@ const navLinks = [
     background: theme("colors.red");
     transform: scaleX(0);
     transform-origin: right;
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform var(--dur) var(--ease-out);
   }
 
   .nav-link:hover .link-name::after,
@@ -162,15 +162,15 @@ const navLinks = [
   }
 
   .menu-button {
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform var(--dur-fast) var(--ease-out);
   }
 
   .menu-button:hover {
-    transform: scale(1.08);
+    transform: scale(1.05);
   }
 
   .menu-button:active {
-    transform: scale(0.94);
+    transform: scale(0.96);
   }
 
   .nav-link--mobile {
@@ -188,9 +188,9 @@ const navLinks = [
     opacity: 0;
     clip-path: circle(0% at calc(100% - 3.5rem) 3rem);
     transition:
-      clip-path 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-      opacity 0.3s ease,
-      visibility 0s linear 0.6s;
+      clip-path 0.8s var(--ease-in-out),
+      opacity 0.5s ease,
+      visibility 0s linear 0.8s;
   }
 
   .mobile-menu[data-open="true"] {
@@ -198,23 +198,23 @@ const navLinks = [
     opacity: 1;
     clip-path: circle(150% at calc(100% - 3.5rem) 3rem);
     transition:
-      clip-path 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-      opacity 0.2s ease,
+      clip-path 0.8s var(--ease-in-out),
+      opacity 0.3s ease,
       visibility 0s;
   }
 
   .mobile-menu .nav-link--mobile {
     opacity: 0;
-    transform: translateX(24px);
+    transform: translateX(16px);
     transition:
-      opacity 0.4s ease,
-      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity var(--dur) ease,
+      transform var(--dur) var(--ease-out);
   }
 
   .mobile-menu[data-open="true"] .nav-link--mobile {
     opacity: 1;
     transform: none;
-    transition-delay: calc(0.12s + var(--i, 0) * 0.06s);
+    transition-delay: calc(0.2s + var(--i, 0) * 0.08s);
   }
 
   .mobile-menu-inner {

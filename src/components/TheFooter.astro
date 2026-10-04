@@ -1,22 +1,18 @@
 <footer class="footer">
-  <div class="page-width page-padding text-sm">
-    <p class="p">
+  <div class="page-width page-padding footer-inner">
+    <p>
       This website is
       <a
         href="https://github.com/atlesque/atlesque-dev"
         target="_blank"
         rel="noopener"
-        class="link"
+        class="footer-link"
         >open-source</a
       >, written in Astro.
     </p>
-    <p class="p">
+    <p>
       Part of
-      <a
-        href="https://atlesque.media/"
-        target="_blank"
-        rel="noopener"
-        class="link"
+      <a href="https://atlesque.media/" target="_blank" rel="noopener" class="footer-link"
         >Atlesque Media VOF</a
       >
     </p>
@@ -24,17 +20,22 @@
 </footer>
 
 <style>
-  .footer {
-    @apply relative bg-gray-extra-light;
+  .footer-inner {
+    @apply flex flex-col gap-1 sm:flex-row sm:justify-between text-sm text-gray-dark;
+
+    border-top: 1px solid theme("colors.gray-light");
   }
 
-  /* Gradient hairline echoing the scroll progress bar */
-  .footer::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, theme("colors.red"), theme("colors.blue"), transparent);
-    opacity: 0.6;
+  .footer-link {
+    @apply underline decoration-gray-light underline-offset-4;
+
+    transition:
+      color var(--dur-fast) ease,
+      text-decoration-color var(--dur-fast) ease;
+  }
+
+  .footer-link:hover,
+  .footer-link:focus-visible {
+    @apply text-black decoration-red;
   }
 </style>
