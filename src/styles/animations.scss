@@ -1,0 +1,63 @@
+// Scroll-reveal system.
+// Content is only hidden when JS is available (html.js) and the user has no
+// reduced-motion preference, so it is always visible to crawlers and no-JS users.
+@media (prefers-reduced-motion: no-preference) {
+  // The hidden state only applies until the element is revealed. The reveal
+  // itself is a keyframe animation (fill-mode: backwards), so once it ends the
+  // element falls back to its own transform/transition (e.g. card hovers).
+  .js .reveal:not(.is-visible),
+  .js .reveal-stagger:not(.is-visible) > * {
+    opacity: 0;
+  }
+
+  .js .reveal.is-visible {
+    animation: reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 80ms);
+  }
+
+  // Staggered children
+  .js .reveal-stagger.is-visible > * {
+    animation: reveal-up-scale 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+
+  @for $i from 1 through 6 {
+    .js .reveal-stagger.is-visible > *:nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 90}ms;
+    }
+  }
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+
+  @keyframes reveal-up-scale {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.98);
+    }
+  }
+
+  // Highlighter sweeps in once its paragraph is revealed
+  .js .reveal .highlight {
+    background-size: 0% 100%;
+    transition: background-size 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s;
+  }
+
+  .js .reveal.is-visible .highlight {
+    background-size: 100% 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

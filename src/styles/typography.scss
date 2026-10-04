@@ -1,6 +1,3 @@
-@use "fonts/libre-baskerville.scss";
-@use "fonts/montserrat.scss";
-
 :root {
   // Responsive type. Source: https://websemantics.uk/tools/responsive-font-calculator/
   font-size: clamp(14px, calc(0.75rem + ((1vw - 7.68px) * 0.1736)), 16px);
@@ -31,6 +28,8 @@ body {
   @apply text-3xl;
   @apply font-medium;
   @apply mb-8;
+
+  letter-spacing: -0.01em;
 }
 
 .headline {
@@ -62,24 +61,60 @@ body {
   @apply text-sm;
 }
 
+// Animated underline that grows from the left on hover/focus
 .link {
   @apply font-medium;
-  @apply underline;
+
+  background-image:
+    linear-gradient(theme("colors.red"), theme("colors.red")),
+    linear-gradient(currentcolor, currentcolor);
+  background-position:
+    0 100%,
+    0 100%;
+  background-repeat: no-repeat;
+  background-size:
+    0 2px,
+    100% 1px;
+  padding-bottom: 1px;
+  transition:
+    background-size 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.2s ease;
 
   &:hover,
   &:active,
-  &:focus {
-    @apply text-red;
+  &:focus-visible {
+    @apply text-red-dark;
+
+    background-size:
+      100% 2px,
+      100% 1px;
   }
+}
+
+// Highlighter sweep for emphasised words, played when the parent is revealed
+.highlight {
+  @apply font-medium;
+
+  background-image: linear-gradient(
+    transparent 60%,
+    theme("colors.red-light") 60%,
+    theme("colors.red-light") 92%,
+    transparent 92%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  box-decoration-break: clone;
 }
 
 @screen md {
   .headline-xl {
     @apply text-4xl;
   }
+
   .headline {
     @apply text-3xl;
   }
+
   .h1 {
     @apply text-2xl;
   }
@@ -91,8 +126,14 @@ body {
   .h3 {
     @apply text-lg;
   }
+
   .p {
     @apply text-base;
   }
 }
 
+@screen xl {
+  .headline-xl {
+    @apply text-5xl;
+  }
+}
