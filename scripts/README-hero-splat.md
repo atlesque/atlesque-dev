@@ -1,7 +1,6 @@
 # Hero splat generation
 
-`public/models/hero.splat` (65,536 Gaussians, ~2 MB) and
-`public/models/hero-131k.splat` (131,072 Gaussians, ~4 MB) are generated from
+`public/models/hero.splat` (65,536 Gaussians, ~2 MB) is generated from
 `src/assets/images/alex/alex-sitting-in-gras-with-camera.png` with
 [TripoSplat](https://github.com/VAST-AI-Research/TripoSplat) (MIT).
 
@@ -36,8 +35,8 @@ for n, g in zip(counts, gs):
     g.save_splat(f"hero_{n}.splat")
 ```
 
-3. Copy `hero_65536.splat` to `public/models/hero.splat` and `hero_131072.splat`
-   to `public/models/hero-131k.splat`.
+3. Copy `hero_65536.splat` to `public/models/hero.splat`. The 131k version
+   looks a little sharper but doubles the download, so it isn't shipped.
 
 Generation takes about 10 seconds. Seed 42, 20 steps and guidance scale 3.0 are
 the TripoSplat defaults; the same seed gives the same output.

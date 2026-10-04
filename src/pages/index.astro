@@ -80,6 +80,12 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
             loading="eager"
             fetchpriority="high"
           />
+          <canvas
+            class="hero-splat"
+            data-src="/models/hero.splat"
+            role="img"
+            aria-label="Me sitting in grass with camera, as a 3D model you can drag to rotate"
+          ></canvas>
         </div>
       </div>
     </section>
@@ -449,6 +455,33 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
 
   .hero-image :global(img) {
     border-radius: 1rem 0.25rem 1rem 1rem;
+    transition: opacity 0.8s var(--ease-out);
+  }
+
+  /* 3D Gaussian splat version of the photo; shown once it has loaded (see hero-splat.ts) */
+  .hero-splat {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    touch-action: pan-y;
+    cursor: grab;
+    transition: opacity 0.8s var(--ease-out);
+  }
+
+  .hero-splat:active {
+    cursor: grabbing;
+  }
+
+  .hero-image.is-splat .hero-splat {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .hero-image.is-splat :global(img) {
+    opacity: 0;
   }
 
   .hero-image:hover {
@@ -797,8 +830,19 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
 </style>
 
 <script>
+  import { initHeroSplat } from "@/scripts/hero-splat";
+
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const audios = document.querySelectorAll<HTMLAudioElement>(".track audio");
+
+  // Swap the hero photo for the 3D splat once the page is idle
+  const heroSplat = document.querySelector<HTMLCanvasElement>(".hero-splat");
+  if (heroSplat && !reducedMotion.matches) {
+    const start = () =>
+      initHeroSplat(heroSplat.parentElement as HTMLElement, heroSplat).catch(() => {});
+    if ("requestIdleCallback" in window) window.requestIdleCallback(start, { timeout: 2500 });
+    else setTimeout(start, 800);
+  }
   const AudioContextClass =
     window.AudioContext ??
     (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
