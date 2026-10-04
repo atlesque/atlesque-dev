@@ -23,9 +23,16 @@ const TEX_WIDTH = 2048; // 4 texels per splat
 const MAX_FOLLOW_YAW = 0.7;
 const MAX_FOLLOW_PITCH = 0.18;
 const TAU = Math.PI * 2;
-/** Intro timing (ms): how long the flat splat sits on the photo, then the conversion. */
-const INTRO_DELAY = 2500;
+/**
+ * Intro timing (ms). The untouched photo shows until PHOTO_HOLD after page
+ * load, then the splat fades in over it (INTRO_DELAY) and the conversion runs
+ * (INTRO_DURATION). The offset frame separates once the dark panel has fully
+ * faded in (PANEL_FADE, matches the CSS transition on .hero-panel).
+ */
+const PHOTO_HOLD = 3000;
+const INTRO_DELAY = 500;
 const INTRO_DURATION = 5000;
+const PANEL_FADE = 3000;
 /** Where the figure sits in the photo: share of the height it fills, and its centre offset in clip space. */
 const PHOTO_FILL = 0.76;
 const PHOTO_OFFSET: [number, number] = [-0.146, -0.182];
@@ -247,12 +254,13 @@ function compile(gl: WebGL2RenderingContext, type: number, src: string) {
   return shader;
 }
 
-export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasElement) {
+/** Resolves to false when the splat can't be shown, so the caller can keep the plain photo. */
+export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasElement): Promise<boolean> {
   const gl = canvas.getContext("webgl2", { antialias: false, premultipliedAlpha: true });
-  if (!gl) return;
+  if (!gl) return false;
 
   const res = await fetch(canvas.dataset.src!);
-  if (!res.ok) return;
+  if (!res.ok) return false;
   const splats = parseSplats(await res.arrayBuffer());
   const { count, centers } = splats;
 
@@ -260,7 +268,7 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
   gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, VERT));
   gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, FRAG));
   gl.linkProgram(prog);
-  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return false;
   gl.useProgram(prog);
 
   const tex = gl.createTexture();
@@ -383,14 +391,16 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
   let last = performance.now();
   let introStart = -1;
   let panelShown = false;
+  let frameOut = false;
   const frame = (now: number) => {
     requestAnimationFrame(frame);
     if (!visible || document.hidden) return;
     const dt = Math.min((now - last) / 1000, 0.05);
     last = now;
 
-    // Intro: photo -> flat splat over the photo -> sweep into the 3D hologram
+    // Intro: untouched photo -> flat splat over the photo -> sweep into the 3D hologram
     if (introStart < 0) {
+      if (now < PHOTO_HOLD) return;
       introStart = now;
       container.classList.add("is-splat-intro");
     }
@@ -399,6 +409,10 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
     if (!panelShown && progress > 0) {
       panelShown = true;
       container.classList.add("is-splat");
+    }
+    if (!frameOut && now - introStart > INTRO_DELAY + PANEL_FADE) {
+      frameOut = true;
+      container.classList.remove("splat-pending");
     }
 
     if (!dragging && now - idleSince > 400) {
@@ -435,4 +449,5 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
     gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, count);
   };
   requestAnimationFrame(frame);
+  return true;
 }

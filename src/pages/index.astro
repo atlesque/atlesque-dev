@@ -528,6 +528,15 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     transform: translate(19px, 19px);
   }
 
+  /* While the photo turns into the hologram the frame stays hidden behind it;
+     removing the class replays frame-in so the two frames separate */
+  .hero-image.splat-pending::before,
+  .hero-image.splat-pending::after {
+    transform: translate(0, 0);
+    opacity: 0;
+    animation: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .hero-image,
     .hero-image::before,
@@ -887,8 +896,14 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
   // Swap the hero photo for the 3D splat once the page is idle
   const heroSplat = document.querySelector<HTMLCanvasElement>(".hero-splat");
   if (heroSplat && !reducedMotion.matches) {
+    const container = heroSplat.parentElement as HTMLElement;
+    // Hold the offset frame back until the hologram's dark panel is in place
+    container.classList.add("splat-pending");
+    const keepPhoto = () => container.classList.remove("splat-pending");
     const start = () =>
-      initHeroSplat(heroSplat.parentElement as HTMLElement, heroSplat).catch(() => {});
+      initHeroSplat(container, heroSplat)
+        .then((shown) => shown || keepPhoto())
+        .catch(keepPhoto);
     if ("requestIdleCallback" in window) window.requestIdleCallback(start, { timeout: 2500 });
     else setTimeout(start, 800);
   }
