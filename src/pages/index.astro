@@ -432,7 +432,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
 
   .hero-image {
     position: relative;
-    transition: transform var(--dur-slow) var(--ease-out);
+    transition: transform var(--dur) var(--ease-in-out);
   }
 
   /* Offset frame behind the hero photo */
@@ -443,7 +443,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     border: 2px solid theme("colors.red");
     border-radius: 1rem 0.25rem 1rem 1rem;
     transform: translate(14px, 14px);
-    transition: transform var(--dur-slow) var(--ease-out);
+    transition: transform var(--dur) var(--ease-in-out);
     z-index: -1;
   }
 
@@ -474,11 +474,11 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     }
 
     .hero-image {
-      animation: rise 1.5s var(--ease-out) 0.15s both;
+      animation: rise 1.5s var(--ease-out) 0.15s backwards;
     }
 
     .hero-image::before {
-      animation: frame-in 1.6s var(--ease-out) 0.5s both;
+      animation: frame-in 1.6s var(--ease-out) 0.5s backwards;
     }
   }
 
