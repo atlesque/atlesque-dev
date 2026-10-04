@@ -23,6 +23,14 @@ const TEX_WIDTH = 2048; // 4 texels per splat
 const MAX_FOLLOW_YAW = 0.7;
 const MAX_FOLLOW_PITCH = 0.18;
 const TAU = Math.PI * 2;
+/** Intro timing (ms): how long the flat splat sits on the photo, then the conversion. */
+const INTRO_DELAY = 700;
+const INTRO_DURATION = 2800;
+/** Where the figure sits in the photo: share of the height it fills, and its centre offset in clip space. */
+const PHOTO_FILL = 0.76;
+const PHOTO_OFFSET: [number, number] = [-0.146, -0.182];
+
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 /** Splat files are usually stored y-down, z-forward (OpenCV); flipping y and z turns them upright. */
 const FLIP_Y = true;
 /** TripoSplat's output faces +x; turn the camera so the figure faces the viewer. */
@@ -34,13 +42,15 @@ precision highp int;
 uniform highp sampler2D uData;
 uniform mat4 uView, uProj;
 uniform vec2 uFocal, uViewport;
-uniform float uSize, uDist, uHalfDepth, uHeight;
+uniform float uDist, uHalfDepth, uHeight, uMorph, uSweep;
+uniform vec2 uOffset;
 in vec2 aCorner;
 in uint aIndex;
 out vec4 vColor;
 out vec2 vPos;
 out float vDepth;
 out float vHeight;
+out float vMorph;
 
 vec4 texel(uint i, uint k) {
   uint t = i * 4u + k;
@@ -49,7 +59,13 @@ vec4 texel(uint i, uint k) {
 
 void main() {
   vec4 t0 = texel(aIndex, 0u), t1 = texel(aIndex, 1u), t2 = texel(aIndex, 2u), t3 = texel(aIndex, 3u);
-  vec4 cam = uView * vec4(t0.xyz, 1.0);
+  // Intro: start flat (like the photo), then grow into full depth.
+  // The figure faces +x, so x is its depth axis.
+  vec3 pos = vec3(t0.x * mix(0.02, 1.0, uMorph), t0.yz);
+  float h = t0.y / uHeight; // -0.5 (feet) .. 0.5 (head)
+  // each splat turns into hologram as the conversion sweeps from head to feet
+  float lm = smoothstep(0.0, 1.0, clamp(uSweep * 2.2 - (0.5 - h) * 1.2, 0.0, 1.0));
+  vec4 cam = uView * vec4(pos, 1.0);
   vec4 clip = uProj * cam;
   float bound = 1.2 * clip.w;
   if (cam.z <= 0.0 || abs(clip.x) > bound || abs(clip.y) > bound) {
@@ -73,13 +89,15 @@ void main() {
     return;
   }
   vec2 dir = normalize(vec2(cov[0][1], l1 - cov[0][0]));
-  vec2 major = min(sqrt(2.0 * l1), 1024.0) * dir * uSize;
-  vec2 minor = min(sqrt(2.0 * l2), 1024.0) * vec2(dir.y, -dir.x) * uSize;
+  float size = mix(1.0, 0.7, lm);
+  vec2 major = min(sqrt(2.0 * l1), 1024.0) * dir * size;
+  vec2 minor = min(sqrt(2.0 * l2), 1024.0) * vec2(dir.y, -dir.x) * size;
   vColor = t1;
   vDepth = clamp((cam.z - uDist) / uHalfDepth * 0.5 + 0.5, 0.0, 1.0);
-  vHeight = t0.y / uHeight; // -0.5 (feet) .. 0.5 (head)
+  vHeight = h;
+  vMorph = lm;
   vPos = aCorner;
-  vec2 c = clip.xy / clip.w;
+  vec2 c = clip.xy / clip.w + uOffset;
   gl_Position = vec4(c + (aCorner.x * major + aCorner.y * minor) / uViewport, 0.0, 1.0);
 }`;
 
@@ -90,6 +108,7 @@ in vec4 vColor;
 in vec2 vPos;
 in float vDepth;
 in float vHeight;
+in float vMorph;
 out vec4 fragColor;
 
 // Brand red (#F3665B) ramp: deep shadow red -> brand red -> hot highlight
@@ -111,8 +130,13 @@ void main() {
   float sweep = fract(uTime * 0.14);
   float band = exp(-pow((vHeight + 0.5 - sweep * 1.5 + 0.25) * 9.0, 2.0));
   float power = (0.55 + 1.6 * lum) * depth * scan + band * 1.4;
-  float b = exp(a) * vColor.a * 0.7;
-  fragColor = vec4(col * power * b, 1.0);
+  float g = exp(a) * vColor.a;
+  vec3 holo = col * power * g * 0.7;
+  // bright seam where the photo is being converted
+  float seam = exp(-pow((vMorph - 0.5) * 5.0, 2.0)) * step(0.001, vMorph) * step(vMorph, 0.999);
+  vec3 rgb = mix(vColor.rgb * g, holo, vMorph) + BRAND * seam * g * 0.6;
+  // photo splats are opaque; hologram splats barely occlude, so they add up to a glow
+  fragColor = vec4(rgb, g * mix(1.0, 0.06, vMorph));
 }`;
 
 interface Splats {
@@ -272,13 +296,16 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
   gl.uniform1f(gl.getUniformLocation(prog, "uDist"), 3);
   gl.uniform1f(gl.getUniformLocation(prog, "uHalfDepth"), splats.height * 0.4);
   gl.uniform1f(gl.getUniformLocation(prog, "uHeight"), splats.height);
-  gl.uniform1f(gl.getUniformLocation(prog, "uSize"), 0.7);
+  const uMorph = gl.getUniformLocation(prog, "uMorph");
+  const uSweep = gl.getUniformLocation(prog, "uSweep");
+  const uOffset = gl.getUniformLocation(prog, "uOffset");
   gl.uniform1i(gl.getUniformLocation(prog, "uData"), 0);
 
   gl.disable(gl.DEPTH_TEST);
   gl.enable(gl.BLEND);
-  // Additive: overlapping points add up to a glow on the dark panel
-  gl.blendFunc(gl.ONE, gl.ONE);
+  // Front-to-back "under" blending: opaque photo splats cover what's behind,
+  // nearly transparent hologram splats add up to a glow on the dark panel
+  gl.blendFuncSeparate(gl.ONE_MINUS_DST_ALPHA, gl.ONE, gl.ONE_MINUS_DST_ALPHA, gl.ONE);
 
   // Front-to-back counting sort on view depth
   const depths = new Int32Array(count);
@@ -354,17 +381,30 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
   canvas.addEventListener("pointercancel", release);
 
   let last = performance.now();
-  let shown = false;
+  let introStart = -1;
+  let panelShown = false;
   const frame = (now: number) => {
     requestAnimationFrame(frame);
     if (!visible || document.hidden) return;
     const dt = Math.min((now - last) / 1000, 0.05);
     last = now;
 
+    // Intro: photo -> flat splat over the photo -> sweep into the 3D hologram
+    if (introStart < 0) {
+      introStart = now;
+      container.classList.add("is-splat-intro");
+    }
+    const progress = Math.min(1, Math.max(0, (now - introStart - INTRO_DELAY) / INTRO_DURATION));
+    const morph = easeInOut(Math.min(1, Math.max(0, progress * 1.2 - 0.1)));
+    if (!panelShown && progress > 0) {
+      panelShown = true;
+      container.classList.add("is-splat");
+    }
+
     if (!dragging && now - idleSince > 400) {
       // the figure turns towards the mouse, i.e. the camera moves the other way
-      const targetYaw = touchPrimary ? Math.sin(now / 2600) * 0.45 : -mouseX * MAX_FOLLOW_YAW;
-      const targetPitch = touchPrimary ? 0 : -mouseY * MAX_FOLLOW_PITCH;
+      const targetYaw = morph * (touchPrimary ? Math.sin(now / 2600) * 0.45 : -mouseX * MAX_FOLLOW_YAW);
+      const targetPitch = morph * (touchPrimary ? 0 : -mouseY * MAX_FOLLOW_PITCH);
       // take the short way round after a full spin
       const delta = ((((targetYaw - yaw + Math.PI) % TAU) + TAU) % TAU) - Math.PI;
       const k = 1 - Math.exp(-dt * 4);
@@ -379,7 +419,12 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
       sortedPitch = pitch;
     }
 
-    const focal = (height * 0.85 * dist) / splats.height;
+    // Start where the figure sits in the photo, end centred
+    const fill = PHOTO_FILL + (0.85 - PHOTO_FILL) * morph;
+    const focal = (height * fill * dist) / splats.height;
+    gl.uniform2f(uOffset, PHOTO_OFFSET[0] * (1 - morph), PHOTO_OFFSET[1] * (1 - morph));
+    gl.uniform1f(uMorph, morph);
+    gl.uniform1f(uSweep, progress);
     gl.uniformMatrix4fv(uView, false, view);
     gl.uniformMatrix4fv(uProj, false, projection(focal, focal, width, height));
     gl.uniform2f(uFocal, focal, focal);
@@ -388,11 +433,6 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, count);
-
-    if (!shown) {
-      shown = true;
-      container.classList.add("is-splat");
-    }
   };
   requestAnimationFrame(frame);
 }

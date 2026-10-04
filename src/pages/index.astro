@@ -80,6 +80,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
             loading="eager"
             fetchpriority="high"
           />
+          <div class="hero-panel" aria-hidden="true"></div>
           <canvas
             class="hero-splat"
             data-src="/models/hero.splat"
@@ -455,7 +456,17 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
 
   .hero-image :global(img) {
     border-radius: 1rem 0.25rem 1rem 1rem;
-    transition: opacity 0.8s var(--ease-out);
+    transition: opacity 1.6s var(--ease-in-out);
+  }
+
+  /* Dark panel the red hologram glows on; fades in as the photo fades out */
+  .hero-panel {
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem 0.25rem 1rem 1rem;
+    background: radial-gradient(ellipse 60% 70% at 50% 55%, #2a0a0c 0%, #12070a 70%, #0b0508 100%);
+    opacity: 0;
+    transition: opacity 1.8s var(--ease-in-out);
   }
 
   /* 3D Gaussian splat version of the photo; shown once it has loaded (see hero-splat.ts) */
@@ -468,20 +479,20 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     pointer-events: none;
     touch-action: pan-y;
     cursor: grab;
-    transition: opacity 0.8s var(--ease-out);
+    transition: opacity 0.5s var(--ease-out);
   }
 
   .hero-splat:active {
     cursor: grabbing;
   }
 
-  /* Dark panel so the red hologram glows */
-  .hero-image.is-splat .hero-splat {
-    border-radius: 1rem 0.25rem 1rem 1rem;
-    background:
-      radial-gradient(ellipse 60% 70% at 50% 55%, #2a0a0c 0%, #12070a 70%, #0b0508 100%);
+  .hero-image.is-splat-intro .hero-splat {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  .hero-image.is-splat .hero-panel {
+    opacity: 1;
   }
 
   .hero-image.is-splat :global(img) {
