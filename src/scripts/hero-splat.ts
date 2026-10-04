@@ -9,6 +9,11 @@
  * Falls back to the plain photo without WebGL2, without JS or when the user
  * prefers reduced motion (the canvas is simply never shown).
  *
+ * Look: the colours stored in the file are only used as a brightness map. The
+ * fragment shader turns them into a single-hue red hologram (depth, scanlines
+ * and a sweeping scan band add variation), so the style can be tuned here
+ * without regenerating the model.
+ *
  * File format: the common ".splat" layout, 32 bytes per Gaussian:
  * position f32×3, scale f32×3, colour u8×4 (RGBA), rotation u8×4 (w,x,y,z).
  */
@@ -29,10 +34,13 @@ precision highp int;
 uniform highp sampler2D uData;
 uniform mat4 uView, uProj;
 uniform vec2 uFocal, uViewport;
+uniform float uSize, uDist, uHalfDepth, uHeight;
 in vec2 aCorner;
 in uint aIndex;
 out vec4 vColor;
 out vec2 vPos;
+out float vDepth;
+out float vHeight;
 
 vec4 texel(uint i, uint k) {
   uint t = i * 4u + k;
@@ -65,9 +73,11 @@ void main() {
     return;
   }
   vec2 dir = normalize(vec2(cov[0][1], l1 - cov[0][0]));
-  vec2 major = min(sqrt(2.0 * l1), 1024.0) * dir;
-  vec2 minor = min(sqrt(2.0 * l2), 1024.0) * vec2(dir.y, -dir.x);
+  vec2 major = min(sqrt(2.0 * l1), 1024.0) * dir * uSize;
+  vec2 minor = min(sqrt(2.0 * l2), 1024.0) * vec2(dir.y, -dir.x) * uSize;
   vColor = t1;
+  vDepth = clamp((cam.z - uDist) / uHalfDepth * 0.5 + 0.5, 0.0, 1.0);
+  vHeight = t0.y / uHeight; // -0.5 (feet) .. 0.5 (head)
   vPos = aCorner;
   vec2 c = clip.xy / clip.w;
   gl_Position = vec4(c + (aCorner.x * major + aCorner.y * minor) / uViewport, 0.0, 1.0);
@@ -75,14 +85,34 @@ void main() {
 
 const FRAG = `#version 300 es
 precision highp float;
+uniform float uTime;
 in vec4 vColor;
 in vec2 vPos;
+in float vDepth;
+in float vHeight;
 out vec4 fragColor;
+
+// Brand red (#F3665B) ramp: deep shadow red -> brand red -> hot highlight
+const vec3 SHADOW = vec3(0.30, 0.03, 0.04);
+const vec3 BRAND = vec3(0.953, 0.400, 0.357);
+const vec3 HOT = vec3(1.0, 0.58, 0.52);
+
 void main() {
   float a = -dot(vPos, vPos);
   if (a < -4.0) discard;
-  float b = exp(a) * vColor.a;
-  fragColor = vec4(b * vColor.rgb, b);
+  float lum = dot(vColor.rgb, vec3(0.299, 0.587, 0.114));
+  lum = smoothstep(0.0, 0.55, lum);
+  vec3 col = lum < 0.6 ? mix(SHADOW, BRAND, lum / 0.6) : mix(BRAND, HOT, (lum - 0.6) / 0.4);
+  // depth: near surfaces glow, far ones recede into the dark
+  float depth = mix(1.15, 0.35, vDepth);
+  // fine horizontal scanlines drifting upwards
+  float scan = 0.78 + 0.22 * sin(vHeight * 90.0 - uTime * 2.2);
+  // a bright band sweeping up the figure every few seconds
+  float sweep = fract(uTime * 0.14);
+  float band = exp(-pow((vHeight + 0.5 - sweep * 1.5 + 0.25) * 9.0, 2.0));
+  float power = (0.55 + 1.6 * lum) * depth * scan + band * 1.4;
+  float b = exp(a) * vColor.a * 0.7;
+  fragColor = vec4(col * power * b, 1.0);
 }`;
 
 interface Splats {
@@ -189,6 +219,7 @@ function compile(gl: WebGL2RenderingContext, type: number, src: string) {
   const shader = gl.createShader(type)!;
   gl.shaderSource(shader, src);
   gl.compileShader(shader);
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) console.warn(gl.getShaderInfoLog(shader));
   return shader;
 }
 
@@ -237,11 +268,17 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
   const uProj = gl.getUniformLocation(prog, "uProj");
   const uFocal = gl.getUniformLocation(prog, "uFocal");
   const uViewport = gl.getUniformLocation(prog, "uViewport");
+  const uTime = gl.getUniformLocation(prog, "uTime");
+  gl.uniform1f(gl.getUniformLocation(prog, "uDist"), 3);
+  gl.uniform1f(gl.getUniformLocation(prog, "uHalfDepth"), splats.height * 0.4);
+  gl.uniform1f(gl.getUniformLocation(prog, "uHeight"), splats.height);
+  gl.uniform1f(gl.getUniformLocation(prog, "uSize"), 0.7);
   gl.uniform1i(gl.getUniformLocation(prog, "uData"), 0);
 
   gl.disable(gl.DEPTH_TEST);
   gl.enable(gl.BLEND);
-  gl.blendFuncSeparate(gl.ONE_MINUS_DST_ALPHA, gl.ONE, gl.ONE_MINUS_DST_ALPHA, gl.ONE);
+  // Additive: overlapping points add up to a glow on the dark panel
+  gl.blendFunc(gl.ONE, gl.ONE);
 
   // Front-to-back counting sort on view depth
   const depths = new Int32Array(count);
@@ -347,6 +384,7 @@ export async function initHeroSplat(container: HTMLElement, canvas: HTMLCanvasEl
     gl.uniformMatrix4fv(uProj, false, projection(focal, focal, width, height));
     gl.uniform2f(uFocal, focal, focal);
     gl.uniform2f(uViewport, width, height);
+    gl.uniform1f(uTime, now / 1000);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, 4, count);

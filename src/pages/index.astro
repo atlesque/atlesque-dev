@@ -475,7 +475,11 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     cursor: grabbing;
   }
 
+  /* Dark panel so the red hologram glows */
   .hero-image.is-splat .hero-splat {
+    border-radius: 1rem 0.25rem 1rem 1rem;
+    background:
+      radial-gradient(ellipse 60% 70% at 50% 55%, #2a0a0c 0%, #12070a 70%, #0b0508 100%);
     opacity: 1;
     pointer-events: auto;
   }
