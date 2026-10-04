@@ -24,8 +24,8 @@ const MAX_FOLLOW_YAW = 0.7;
 const MAX_FOLLOW_PITCH = 0.18;
 const TAU = Math.PI * 2;
 /** Intro timing (ms): how long the flat splat sits on the photo, then the conversion. */
-const INTRO_DELAY = 700;
-const INTRO_DURATION = 2800;
+const INTRO_DELAY = 2500;
+const INTRO_DURATION = 5000;
 /** Where the figure sits in the photo: share of the height it fills, and its centre offset in clip space. */
 const PHOTO_FILL = 0.76;
 const PHOTO_OFFSET: [number, number] = [-0.146, -0.182];

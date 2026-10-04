@@ -443,20 +443,40 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
   }
 
   /* Offset frame behind the hero photo */
-  .hero-image::before {
+  .hero-image::before,
+  .hero-image::after {
     content: "";
     position: absolute;
     inset: 0;
-    border: 2px solid theme("colors.red");
     border-radius: 1rem 0.25rem 1rem 1rem;
     transform: translate(14px, 14px);
     transition: transform 1.4s var(--ease-in-out);
+    pointer-events: none;
+  }
+
+  /* Gradient outline: a border-box gradient masked down to the 2px ring */
+  .hero-image::before {
+    border: 2px solid transparent;
+    background: linear-gradient(135deg, #ff9f7a, theme("colors.red") 45%, theme("colors.red-dark")) border-box;
+    mask:
+      linear-gradient(#000 0 0) padding-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
     z-index: -1;
+  }
+
+  /* Soft glow along the outline, warm at the top left and deep red at the bottom right */
+  .hero-image::after {
+    box-shadow:
+      0 0 28px 2px rgb(243 102 91 / 55%),
+      -6px -6px 26px -4px rgb(255 159 122 / 65%),
+      12px 12px 34px -4px rgb(201 58 47 / 70%);
+    z-index: -2;
   }
 
   .hero-image :global(img) {
     border-radius: 1rem 0.25rem 1rem 1rem;
-    transition: opacity 1.6s var(--ease-in-out);
+    transition: opacity 2.6s var(--ease-in-out);
   }
 
   /* Dark panel the red hologram glows on; fades in as the photo fades out */
@@ -466,7 +486,7 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     border-radius: 1rem 0.25rem 1rem 1rem;
     background: radial-gradient(ellipse 60% 70% at 50% 55%, #2a0a0c 0%, #12070a 70%, #0b0508 100%);
     opacity: 0;
-    transition: opacity 1.8s var(--ease-in-out);
+    transition: opacity 3s var(--ease-in-out);
   }
 
   /* 3D Gaussian splat version of the photo; shown once it has loaded (see hero-splat.ts) */
@@ -503,13 +523,15 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     transform: translate(-3px, -3px);
   }
 
-  .hero-image:hover::before {
+  .hero-image:hover::before,
+  .hero-image:hover::after {
     transform: translate(19px, 19px);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .hero-image,
-    .hero-image::before {
+    .hero-image::before,
+    .hero-image::after {
       transition: none;
     }
   }
@@ -534,6 +556,12 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
 
     .hero-image::before {
       animation: frame-in 1.6s var(--ease-out) 0.5s backwards;
+    }
+
+    .hero-image::after {
+      animation:
+        frame-in 1.6s var(--ease-out) 0.5s backwards,
+        glow-pulse 3.2s var(--ease-in-out) 2.1s infinite alternate;
     }
   }
 
@@ -560,6 +588,12 @@ const thumbSizes = "(min-width: 768px) 188px, (min-width: 640px) 30vw, 45vw";
     from {
       opacity: 0;
       transform: translateY(12px);
+    }
+  }
+
+  @keyframes glow-pulse {
+    to {
+      opacity: 0.55;
     }
   }
 
