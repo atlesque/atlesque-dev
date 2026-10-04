@@ -2,38 +2,42 @@
 // Content is only hidden when JS is available (html.js) and the user has no
 // reduced-motion preference, so it is always visible to crawlers and no-JS users.
 @media (prefers-reduced-motion: no-preference) {
-  .js .reveal {
+  // The hidden state only applies until the element is revealed. The reveal
+  // itself is a keyframe animation (fill-mode: backwards), so once it ends the
+  // element falls back to its own transform/transition (e.g. card hovers).
+  .js .reveal:not(.is-visible),
+  .js .reveal-stagger:not(.is-visible) > * {
     opacity: 0;
-    transform: translateY(24px);
-    transition:
-      opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: calc(var(--i, 0) * 80ms);
   }
 
   .js .reveal.is-visible {
-    opacity: 1;
-    transform: none;
+    animation: reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 80ms);
   }
 
   // Staggered children
-  .js .reveal-stagger > * {
-    opacity: 0;
-    transform: translateY(24px) scale(0.98);
-    transition:
-      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  .js .reveal-stagger.is-visible > * {
+    animation: reveal-up-scale 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
   }
 
   @for $i from 1 through 6 {
-    .js .reveal-stagger > *:nth-child(#{$i}) {
-      transition-delay: #{($i - 1) * 90}ms;
+    .js .reveal-stagger.is-visible > *:nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 90}ms;
     }
   }
 
-  .js .reveal-stagger.is-visible > * {
-    opacity: 1;
-    transform: none;
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+
+  @keyframes reveal-up-scale {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.98);
+    }
   }
 
   // Highlighter sweeps in once its paragraph is revealed
