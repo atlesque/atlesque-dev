@@ -14,7 +14,7 @@
   "dependencies": {
     "@astrojs/tailwind": "^6.0.0",
     "astro": "^5.0.0",
-    "sharp": "^0.34.5"
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "eslint": "^9.0.0",
